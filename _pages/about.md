@@ -7,7 +7,7 @@ redirect_from:
   - /about.html
 ---
 
-**Front Pages**
+**Hi!**
 
 Hi!
 
