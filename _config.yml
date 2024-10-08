@@ -217,7 +217,7 @@ collections:
   publications:
     output: true
     permalink: /:collection/:path/
-  portfolio:
+  experiments:
     output: true
     permalink: /:collection/:path/
   talks:
@@ -266,7 +266,7 @@ defaults:
   # _portfolio
   - scope:
       path: ""
-      type: portfolio
+      type: experiments
     values:
       layout: single
       author_profile: true
