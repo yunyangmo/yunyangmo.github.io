@@ -1,0 +1,47 @@
+baseURL: "http://localhost:1313/"
+title: "Yunyang Mo"
+theme: "PaperMod"
+languageCode: "en-us"
+
+params:
+  defaultTheme: light
+  ShowReadingTime: true
+  ShowCodeCopyButtons: true
+  ShowPostNavLinks: true
+  ShowBreadCrumbs: true
+  ShowToc: true
+  math: true
+
+  homeInfoParams:
+    Title: "Hi, this is Yunyang."
+    Content: "Some messy thoughts on reinforcement learning, robotics, and how brains make all this look easy."
+
+menu:
+  main:
+    - identifier: posts
+      name: Posts
+      url: /posts/
+      weight: 10
+    - identifier: archive
+      name: Archive
+      url: /archives/
+      weight: 20
+    - identifier: search
+      name: Search
+      url: /search/
+      weight: 30
+    - identifier: tags
+      name: Tags
+      url: /tags/
+      weight: 40
+
+outputs:
+  home:
+    - HTML
+    - RSS
+    - JSON
+ 
+markup:
+  goldmark:
+    renderer:
+      unsafe: true

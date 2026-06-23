@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Bellman Equation on Yunyang Mo</title>
+    <link>http://localhost:1313/tags/bellman-equation/</link>
+    <description>Recent content in Bellman Equation on Yunyang Mo</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <lastBuildDate>Mon, 22 Jun 2026 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://localhost:1313/tags/bellman-equation/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Why we need Reinforcement Learning?</title>
+      <link>http://localhost:1313/posts/rl_math_01/</link>
+      <pubDate>Mon, 22 Jun 2026 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/posts/rl_math_01/</guid>
+      <description>&lt;hr&gt;
+&lt;h2 id=&#34;1-what-is-reinforcement-learning&#34;&gt;1. What is Reinforcement Learning?&lt;/h2&gt;
+&lt;p&gt;Reinforcement Learning (RL), at its core, is a method of learning. &lt;a href=&#34;https://en.wikipedia.org/wiki/Learning&#34;&gt;Learning&lt;/a&gt; based on wikipedia, is the process of acquiring new understanding and knowledge. To simplify it: when you see something, you know something more than that.&lt;/p&gt;
+&lt;p&gt;Some classic ways of learning can be shown as examples.&lt;/p&gt;
+&lt;p&gt;In &lt;a href=&#34;https://en.wikipedia.org/wiki/Supervised_learning&#34;&gt;supervised learning&lt;/a&gt;, we learn from supervised examples:&lt;/p&gt;
+&lt;p&gt;$$
+\text{input} \rightarrow \text{target}
+$$&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;Supervised learning dog example&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/dog.png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;The model sees an input and is taught what the correct corresponding target should be. If we later see a different input with the same label, we learn to associate it with the same target.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>
