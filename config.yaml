@@ -1,4 +1,4 @@
-baseURL: baseURL: "https://yunyangmo.github.io/" #"http://localhost:1313/"
+baseURL: "https://yunyangmo.github.io/" #"http://localhost:1313/"
 title: "Yunyang Mo"
 theme: "PaperMod"
 languageCode: "en-us"
