@@ -6,13 +6,28 @@
     <description>Recent content in Research Notes on Yunyang Mo</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 22 Jun 2026 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 28 Jun 2026 00:00:00 +0000</lastBuildDate>
     <atom:link href="http://localhost:1313/categories/research-notes/index.xml" rel="self" type="application/rss+xml" />
     <item>
+      <title>From Value Function to Policy Optimization</title>
+      <link>http://localhost:1313/posts/rl_101_02/</link>
+      <pubDate>Sun, 28 Jun 2026 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/posts/rl_101_02/</guid>
+      <description>&lt;hr&gt;
+&lt;h2 id=&#34;preface&#34;&gt;Preface&lt;/h2&gt;
+&lt;p&gt;In &lt;a href=&#34;http://localhost:1313/posts/rl_101_01/&#34;&gt;previous note&lt;/a&gt;, we introduced the basic idea of Reinforcement Learning and discussed how the Bellman equation can be used to compute the value function.&lt;/p&gt;
+&lt;p&gt;Intuitively, the value function gives us a way to describe how good a state, or a state-action pair is.&lt;/p&gt;
+&lt;p&gt;In this section, we go one step further.&lt;/p&gt;
+&lt;p&gt;If value tells us how good something is, then a natural question is:&lt;/p&gt;
+&lt;p&gt;$$
+\text{How can we use value to improve the policy?}
+$$&lt;/p&gt;</description>
+    </item>
+    <item>
       <title>Why we need Reinforcement Learning?</title>
-      <link>http://localhost:1313/posts/rl_math_01/</link>
+      <link>http://localhost:1313/posts/rl_101_01/</link>
       <pubDate>Mon, 22 Jun 2026 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/rl_math_01/</guid>
+      <guid>http://localhost:1313/posts/rl_101_01/</guid>
       <description>&lt;hr&gt;
 &lt;h2 id=&#34;1-what-is-reinforcement-learning&#34;&gt;1. What is Reinforcement Learning?&lt;/h2&gt;
 &lt;p&gt;Reinforcement Learning (RL), at its core, is a method of learning. &lt;a href=&#34;https://en.wikipedia.org/wiki/Learning&#34;&gt;Learning&lt;/a&gt; based on wikipedia, is the process of acquiring new understanding and knowledge. To simplify it: when you see something, you know something more than that.&lt;/p&gt;

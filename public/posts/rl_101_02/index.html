@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="light">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="noindex, nofollow">
+<title>From Value Function to Policy Optimization | Yunyang Mo</title>
+<meta name="keywords" content="reinforcement learning, bellman optimality, value iteration, policy iteration">
+<meta name="description" content="Preface
+In the previous note, we introduced the basic idea of Reinforcement Learning and discussed how the Bellman equation can be used to compute the value function.
+Intuitively, the value function tells us how much future return we can expect from a state, or from taking a particular action in that state.
+In this section, we go one step further.
+If value tells us how good something is, then a natural question is:">
+<meta name="author" content="">
+<link rel="canonical" href="http://localhost:1313/posts/rl_101_02/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.cd9298b33628769aa1bc1acebbbfd7aa11ce81dfe03484d479e1907760249a1d.css" integrity="sha256-zZKYszYodpqhvBrOu7/XqhHOgd/gNITUeeGQd2Akmh0=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/posts/rl_101_02/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    }
+
+</script>
+<script>
+window.MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']],
+    displayMath: [['$$', '$$'], ['\\[', '\\]']],
+    processEscapes: true
+  },
+  svg: {
+    fontCache: 'global'
+  }
+};
+</script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js"></script>
+
+
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="header-nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Yunyang Mo (Alt + H)">Yunyang Mo</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" class="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg class="moon" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg class="sun" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu" class="menu">
+            <li>
+                <a href="http://localhost:1313/posts/" title="Posts">
+                    <span>Posts</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/archives/" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <nav class="breadcrumbs" role="navigation" aria-label="Breadcrumb">
+            <a href="/">Home</a>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
+                <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+            <a href="/posts/">Posts</a>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
+        <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+</nav>
+    <h1 class="post-title entry-hint-parent">
+      From Value Function to Policy Optimization
+    </h1>
+    <div class="post-meta">
+
+<span title='2026-06-28 00:00:00 +0000 UTC'>June 28, 2026</span>&nbsp;·&nbsp;<span>8 min</span>
+
+</div>
+  </header> <details class="toc" >
+    <summary accesskey="c" title="(Alt + C)">
+        <span class="title">Table of Contents</span>
+    </summary>
+
+    <div class="inner"><ul>
+            <li>
+                <a href="#preface" aria-label="Preface">Preface</a></li>
+            <li>
+                <a href="#1-bellman-optimality-equation-leads-to-the-optimal-policy" aria-label="1. Bellman Optimality Equation Leads to the Optimal Policy">1. Bellman Optimality Equation Leads to the Optimal Policy</a></li>
+            <li>
+                <a href="#2-solving-the-problem-by-planning" aria-label="2. Solving the Problem by Planning">2. Solving the Problem by Planning</a></li>
+            <li>
+                <a href="#21-value-iteration" aria-label="2.1 Value Iteration">2.1 Value Iteration</a></li>
+            <li>
+                <a href="#22-policy-iteration" aria-label="2.2 Policy Iteration">2.2 Policy Iteration</a></li>
+            <li>
+                <a href="#3-what-if-the-horizon-goes-to-infinity" aria-label="3. What if the Horizon Goes to Infinity?">3. What if the Horizon Goes to Infinity?</a></li>
+            <li>
+                <a href="#4-bellman-optimality-in-the-infinite-horizon-case" aria-label="4. Bellman Optimality in the Infinite-Horizon Case">4. Bellman Optimality in the Infinite-Horizon Case</a></li>
+            <li>
+                <a href="#5-summary" aria-label="5. Summary">5. Summary</a></li>
+            <li>
+                <a href="#6-application" aria-label="6. Application">6. Application</a></li>
+            <li>
+                <a href="#references" aria-label="References">References</a>
+            </li>
+        </ul>
+    </div>
+</details>
+
+  <div class="post-content md-content"><h2 id="preface">Preface<a hidden class="anchor" aria-hidden="true" href="#preface">#</a></h2>
+<p>In the <a href="/posts/rl_101_01/">previous note</a>, we introduced the basic idea of Reinforcement Learning and discussed how the Bellman equation can be used to compute the value function.</p>
+<p>Intuitively, the value function tells us how much future return we can expect from a state, or from taking a particular action in that state.</p>
+<p>In this section, we go one step further.</p>
+<p>If value tells us how good something is, then a natural question is:</p>
+<p>$$
+\text{How can we use value to improve the policy?}
+$$</p>
+<p>In other words, we now move from <strong>policy evaluation</strong> to <strong>policy optimization</strong>.</p>
+<hr>
+<h2 id="1-bellman-optimality-equation-leads-to-the-optimal-policy">1. Bellman Optimality Equation Leads to the Optimal Policy<a hidden class="anchor" aria-hidden="true" href="#1-bellman-optimality-equation-leads-to-the-optimal-policy">#</a></h2>
+<p>Earlier, we used the Bellman equation to compute value under a fixed policy.</p>
+<p>Now we want to use the Bellman optimality equation as a training goal. But before doing that, we should first ask:</p>
+<p>$$
+\text{If we solve the Bellman optimality equation, can it really give us the optimal policy?}
+$$</p>
+<p>For a finite-horizon Markov Decision Process, we want to prove that</p>
+<p>$$
+V_h^{\pi^\star}(s)=\max_\pi V_h^\pi(s),
+\qquad
+\forall h,s
+$$</p>
+<p>The proof can be understood by backward induction.</p>
+<p>Assume that at time $h+1$, the optimal value is already correct:</p>
+<p>$$
+V_{h+1}^{\pi^\star}(s)=\max_\pi V_{h+1}^\pi(s),
+\qquad
+\forall s
+$$</p>
+<p>We want to show that this also holds at time $h$.</p>
+<p>At the terminal step, the agent receives no future reward after the horizon, so</p>
+<p>$$
+V_{H+1}^{\pi^\star}(s)=\max_\pi V_{H+1}^\pi(s)=0
+$$</p>
+<p>This gives the base case.</p>
+<p>Now consider the action-value function. For any state-action pair $(s,a)$,</p>
+<p>$$
+Q_h^\pi(s,a)=
+r_h(s,a)+
+E_{s&rsquo;\sim P(\cdot\mid s,a)}
+\left[
+V_{h+1}^\pi(s&rsquo;)
+\right]
+$$</p>
+<p>Taking the maximum over policies gives</p>
+<p>$$
+\begin{aligned}
+\max_\pi Q_h^\pi(s,a)
+&amp;=
+\max_\pi
+\left(
+r_h(s,a)+
+E_{s&rsquo;\sim P(\cdot\mid s,a)}
+\left[
+V_{h+1}^\pi(s&rsquo;)
+\right]
+\right)
+<br>
+&amp;=
+r_h(s,a)+
+\max_\pi
+E_{s&rsquo;\sim P(\cdot\mid s,a)}
+\left[
+V_{h+1}^\pi(s&rsquo;)
+\right]
+\end{aligned}
+$$</p>
+<p>By the induction assumption, the optimal continuation value at time $h+1$ satisfies</p>
+<p>$$
+V_{h+1}^{\pi^\star}(s&rsquo;)=
+\max_\pi V_{h+1}^\pi(s&rsquo;),
+\qquad
+\forall s'
+$$</p>
+<p>Since a policy can choose actions based on the state it reaches, the optimal continuation policy can be used for every possible next state $s&rsquo;$. Therefore,</p>
+<p>$$
+\begin{aligned}
+\max_\pi Q_h^\pi(s,a)
+&amp;=
+r_h(s,a)+
+E_{s&rsquo;\sim P(\cdot\mid s,a)}
+\left[
+V_{h+1}^{\pi^\star}(s&rsquo;)
+\right]
+<br>
+&amp;=
+Q_h^{\pi^\star}(s,a)
+\end{aligned}
+$$</p>
+<p>Now we convert from $Q$ to $V$.</p>
+<p>For a stochastic policy, $V_h^\pi(s)$ is an expectation over actions. But the optimal policy can put all probability mass on the best action. Therefore,</p>
+<p>$$
+\begin{aligned}
+\max_\pi V_h^\pi(s)
+&amp;=
+\max_\pi
+\sum_a \pi(a\mid s)Q_h^\pi(s,a)
+<br>
+&amp;=
+\max_a
+\max_\pi Q_h^\pi(s,a)
+<br>
+&amp;=
+\max_a Q_h^{\pi^\star}(s,a)
+<br>
+&amp;=
+V_h^{\pi^\star}(s)
+\end{aligned}
+$$</p>
+<p>So by backward induction,</p>
+<p>$$
+V_h^{\pi^\star}(s)=\max_\pi V_h^\pi(s),
+\qquad
+\forall h,s
+$$</p>
+<p>The whole point is simple:</p>
+<blockquote>
+<p>If the future value is already optimal, then choosing the action that leads to the best future gives the optimal value now.</p>
+</blockquote>
+<hr>
+<h2 id="2-solving-the-problem-by-planning">2. Solving the Problem by Planning<a hidden class="anchor" aria-hidden="true" href="#2-solving-the-problem-by-planning">#</a></h2>
+<p>Now we know that if the optimal value function is known, then the optimal policy can be recovered by choosing the action with the highest value.</p>
+<p>This gives us a direct solution method: <strong>planning</strong>.</p>
+<p>In the planning setting, we assume the environment model is known:</p>
+<p>$$
+\text{Env}=(\mathcal{S},\mathcal{A},r,P)
+$$</p>
+<p>That means we know both the reward function $r$ and the transition probability $P$.</p>
+<p>The goal is then:</p>
+<p>$$
+\text{given } r \text{ and } P,\quad \text{compute } \pi^\star
+$$</p>
+<p>This is often called the simulation setting or model-based planning setting.</p>
+<p>There are two classical ways to do this.</p>
+<hr>
+<h2 id="21-value-iteration">2.1 Value Iteration<a hidden class="anchor" aria-hidden="true" href="#21-value-iteration">#</a></h2>
+<p>Value iteration directly applies the Bellman optimality equation.</p>
+<p>For a finite-horizon MDP, initialize</p>
+<p>$$
+V_{H+1}^\star(s)=0
+$$</p>
+<p>Then for</p>
+<p>$$
+h=H,H-1,\dots,0
+$$</p>
+<p>we compute</p>
+<p>$$
+Q_h^\star(s,a)=
+r_h(s,a)+
+(P_hV_{h+1}^\star)(s,a),
+\qquad
+\forall s,a
+$$</p>
+<p>where</p>
+<p>$$
+(P_hV_{h+1}^\star)(s,a)=
+E_{s&rsquo;\sim P_h(\cdot\mid s,a)}
+\left[
+V_{h+1}^\star(s&rsquo;)
+\right]
+$$</p>
+<p>Then update</p>
+<p>$$
+V_h^\star(s)=\max_a Q_h^\star(s,a)
+$$</p>
+<p>After computing the optimal value, the optimal policy is obtained by</p>
+<p>$$
+\pi_h^\star(s)=
+\arg\max_a Q_h^\star(s,a)
+$$</p>
+<p>Intuitively, value iteration works backward in time:</p>
+<p>$$
+\text{future value}\rightarrow\text{current value}\rightarrow\text{current action}
+$$</p>
+<p>It builds a global value map first, and then uses this value map to guide the actor.</p>
+<hr>
+<h2 id="22-policy-iteration">2.2 Policy Iteration<a hidden class="anchor" aria-hidden="true" href="#22-policy-iteration">#</a></h2>
+<p>Policy iteration takes another view.</p>
+<p>Instead of directly updating the value toward the optimal Bellman equation, it alternates between two steps:</p>
+<ol>
+<li>evaluate the current policy;</li>
+<li>improve the policy using the current value.</li>
+</ol>
+<p>Initialize an arbitrary policy:</p>
+<p>$$
+\pi^0
+$$</p>
+<p>At iteration $t$, first do policy evaluation:</p>
+<p>$$
+Q_h^{\pi^t}(s,a)=
+r_h(s,a)+
+(P_hV_{h+1}^{\pi^t})(s,a)
+$$</p>
+<p>Then improve the policy greedily:</p>
+<p>$$
+\pi_h^{t+1}(s)=
+\arg\max_{a\in\mathcal{A}}
+Q_h^{\pi^t}(s,a),
+\qquad
+\forall s,h
+$$</p>
+<p>Here the policy is a global policy map. It is not only choosing one action for one state. It updates the decision rule for all states.</p>
+<p>This is important because planning is not a local one-step trick. The policy improvement step changes the global behavior of the agent.</p>
+<p>With exact policy evaluation and exact greedy improvement, finite-horizon policy iteration can be understood as propagating improved decisions backward through time.</p>
+<p>The intuition is simple.</p>
+<blockquote>
+<p>At the first iteration, the policy can make the correct decision near the terminal state. At the next iteration, this improved decision is propagated one step earlier. Repeating this process spreads the improved decisions backward through time.</p>
+</blockquote>
+<p>After enough iterations, the improvement has propagated through the whole horizon.</p>
+<p>So policy iteration can be understood as:</p>
+<p>$$
+\text{policy evaluation}\rightarrow\text{policy improvement}\rightarrow\text{policy evaluation}\rightarrow\cdots
+$$</p>
+<hr>
+<h2 id="3-what-if-the-horizon-goes-to-infinity">3. What if the Horizon Goes to Infinity?<a hidden class="anchor" aria-hidden="true" href="#3-what-if-the-horizon-goes-to-infinity">#</a></h2>
+<p>The previous discussion assumes a finite horizon. But many RL problems are naturally infinite-horizon problems.</p>
+<p>If we simply sum all future rewards,</p>
+<p>$$
+\sum_{t=0}^{\infty}r_t
+$$</p>
+<p>the return may become unbounded.</p>
+<p>To avoid this, we introduce a discount factor:</p>
+<p>$$
+\gamma\in(0,1)
+$$</p>
+<p>An infinite-horizon discounted MDP can be written as</p>
+<p>$$
+\text{MDP}=(\mathcal{S},\mathcal{A},r,P,\gamma)
+$$</p>
+<p>The value function becomes</p>
+<p>$$
+V^\pi(s)=
+E_\pi
+\left[
+\sum_{t=0}^{\infty}\gamma^t r_t
+\mid
+s_0=s
+\right]
+$$</p>
+<p>The discount factor has two meanings.</p>
+<p>First, it makes the infinite sum finite, as we have discussed in <a href="/posts/rl_101_01/">note</a>.</p>
+<p>Second, it makes rewards in the far future less important.</p>
+<p>To see the effective horizon, consider the discounted tail after step $h$:
+Assume rewards are bounded,then
+$$
+\sum_{t=h}^{\infty}\gamma^t=
+\gamma^h
+\sum_{k=0}^{\infty}\gamma^k=
+\frac{\gamma^h}{1-\gamma}
+$$</p>
+<p>If we want this tail to be smaller than $\epsilon$, we need</p>
+<p>$$
+\frac{\gamma^h}{1-\gamma}\leq \epsilon
+$$</p>
+<p>Taking log function gives</p>
+<p>$$
+h\log\gamma
+\leq
+\log((1-\gamma)\epsilon)
+$$</p>
+<p>Since $\log\gamma&lt;0$, we get</p>
+<p>$$
+h
+\geq
+\frac{\log(1/((1-\gamma)\epsilon))}{-\log\gamma}
+$$</p>
+<p>When $\gamma$ is close to 1, we use the approximation</p>
+<p>$$
+-\log\gamma\approx 1-\gamma
+$$</p>
+<p>Therefore,</p>
+<p>$$
+h
+\gtrsim
+\frac{1}{1-\gamma}
+\log
+\left(
+\frac{1}{(1-\gamma)\epsilon}
+\right)=
+\tilde{\mathcal{O}}
+\left(
+\frac{1}{1-\gamma}
+\right)
+$$</p>
+<p>This tells us that the effective horizon of a discounted MDP is roughly</p>
+<p>$$
+\frac{1}{1-\gamma}
+$$</p>
+<p>So even though the problem is infinite-horizon, discounting makes it behave like a long but finite-horizon problem.</p>
+<hr>
+<h2 id="4-bellman-optimality-in-the-infinite-horizon-case">4. Bellman Optimality in the Infinite-Horizon Case<a hidden class="anchor" aria-hidden="true" href="#4-bellman-optimality-in-the-infinite-horizon-case">#</a></h2>
+<p>In the infinite-horizon discounted setting, the Bellman optimality equation becomes time-independent.</p>
+<p>The optimal value satisfies</p>
+<p>$$
+V^\star(s)=
+\max_a
+\left(
+r(s,a)+
+\gamma
+E_{s&rsquo;\sim P(\cdot\mid s,a)}
+\left[
+V^\star(s&rsquo;)
+\right]
+\right)
+$$</p>
+<p>The optimal Q-function satisfies</p>
+<p>$$
+Q^\star(s,a)=
+r(s,a)+
+\gamma
+E_{s&rsquo;\sim P(\cdot\mid s,a)}
+\left[
+\max_{a&rsquo;}Q^\star(s&rsquo;,a&rsquo;)
+\right]
+$$</p>
+<p>Once $Q^\star$ is known, the optimal policy is simply</p>
+<p>$$
+\pi^\star(s)=
+\arg\max_a Q^\star(s,a)
+$$</p>
+<p>This is the infinite-horizon version of the same idea:</p>
+<blockquote>
+<p>value tells us which action is good, and the policy follows the action with the best value.</p>
+</blockquote>
+<hr>
+<h2 id="5-summary">5. Summary<a hidden class="anchor" aria-hidden="true" href="#5-summary">#</a></h2>
+<p>This section connects value computation to policy optimization.</p>
+<p>The core logic is:</p>
+<p>$$
+\text{Bellman equation}\rightarrow\text{value function}\rightarrow\text{policy improvement}
+$$</p>
+<p>For finite-horizon problems, we can prove optimality by backward induction.</p>
+<p>For known environments, we can solve the problem by planning, mainly through value iteration or policy iteration.</p>
+<p>For infinite-horizon problems, discounting makes the return finite and introduces an effective horizon:</p>
+<p>$$
+H_{\mathrm{eff}}\approx \frac{1}{1-\gamma}
+$$</p>
+<p>So the big picture is:</p>
+<p>$$
+\text{RL is not only about estimating value. It is about using value to act better.}
+$$</p>
+<hr>
+<h2 id="6-application">6. Application<a hidden class="anchor" aria-hidden="true" href="#6-application">#</a></h2>
+<p>Here we briefly introduce a method that leverages the idea of learning a transition model to improve policy learning.</p>
+<p>In previous sections, planning assumes that the transition model is known. However, in real RL scenarios, the true transition model is usually unknown. Dreamer addresses this problem by learning a latent world model from interaction data [4].
+In a simplified view, Dreamer learns a latent dynamics model:
+$$
+z_{t+1}\sim p_\theta(\cdot\mid z_t,a_t)
+$$</p>
+<p>where $z_t$ is a compact latent state learned from observations.</p>
+<p>Once this model is learned, Dreamer can imagine future trajectories in latent space:</p>
+<p>$$
+z_t,a_t,\hat{r_t},z_{t+1},a_{t+1},\hat{r}_{t+1},\dots
+$$</p>
+<p>Then the actor and critic are trained on these imagined futures. In this sense, Dreamer connects back to the planning idea discussed above: when the true transition model is unavailable, it learns a transition model and uses the imagined futures from this model to train the policy and value function.</p>
+<p>The following figure shows the pipeline of the classic Dreamer algorithm. Later variants have extended this framework, but the core idea remains similar [4, 5, 6].</p>
+<p align="center">
+  <img src="/dreamer_horizontal_pipeline.png" alt="Dreamer horizontal pipeline" width="720">
+</p>
+<p align="center">
+  <em>Figure: Classic Dreamer pipeline. Adapted from Hafner et al., 2020 [4].</em>
+</p>
+<hr>
+<h2 id="references">References<a hidden class="anchor" aria-hidden="true" href="#references">#</a></h2>
+<p>[1] Richard S. Sutton and Andrew G. Barto. <em>Reinforcement Learning: An Introduction</em>. 2nd edition, MIT Press, 2018.<br>
+Available online: <a href="http://incompleteideas.net/book/the-book-2nd.html">http://incompleteideas.net/book/the-book-2nd.html</a></p>
+<p>[2] Richard Bellman. <em>Dynamic Programming</em>. Princeton University Press, 1957.</p>
+<p>[3] Martin L. Puterman. <em>Markov Decision Processes: Discrete Stochastic Dynamic Programming</em>. Wiley, 1994.</p>
+<p>[4] Danijar Hafner, Timothy Lillicrap, Jimmy Ba, and Mohammad Norouzi. <em>Dream to Control: Learning Behaviors by Latent Imagination</em>. ICLR, 2020.</p>
+<p>[5] Danijar Hafner, Timothy Lillicrap, Mohammad Norouzi, and Jimmy Ba. <em>Mastering Atari with Discrete World Models</em>. ICLR, 2021.</p>
+<p>[6] Danijar Hafner, Jurgis Pasukonis, Jimmy Ba, and Timothy Lillicrap. <em>Mastering Diverse Domains through World Models</em>. arXiv, 2023.</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/reinforcement-learning/">Reinforcement Learning</a></li>
+      <li><a href="http://localhost:1313/tags/bellman-optimality/">Bellman Optimality</a></li>
+      <li><a href="http://localhost:1313/tags/value-iteration/">Value Iteration</a></li>
+      <li><a href="http://localhost:1313/tags/policy-iteration/">Policy Iteration</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/rl_101_01/">
+    <span class="title">« Prev</span>
+    <span>Why we need Reinforcement Learning?</span>
+  </a>
+</nav>
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2026 <a href="http://localhost:1313/">Yunyang Mo</a></span> · 
+
+    
+    
+    <span>
+        Powered by
+        <a href="https://gohugo.io/?utm_source=papermod" rel="noopener" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" id="top-link" class="top-link hidden" aria-label="go to top" title="Go to Top (Alt + G)" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevrons-up">
+        <polyline points="17 11 12 6 7 11"></polyline>
+        <polyline points="17 18 12 13 7 18"></polyline>
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var toplink = document.getElementById("top-link");
+    window.onscroll = function () {
+        const scrollThreshold = window.innerHeight;
+        if (document.body.scrollTop > scrollThreshold || document.documentElement.scrollTop > scrollThreshold) {
+            toplink.classList.remove("hidden");
+        } else {
+            toplink.classList.add("hidden");
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

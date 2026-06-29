@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="light">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="noindex, nofollow">
+<title>Why we need Reinforcement Learning? | Yunyang Mo</title>
+<meta name="keywords" content="reinforcement learning, bellman equation, monte carlo, value function">
+<meta name="description" content="
+1. What is Reinforcement Learning?
+Reinforcement Learning (RL), at its core, is a method of learning. Learning based on wikipedia, is the process of acquiring new understanding and knowledge. To simplify it: when you see something, you know something more than that.
+Some classic ways of learning can be shown as examples.
+In supervised learning, we learn from supervised examples:
+$$
+\text{input} \rightarrow \text{target}
+$$
+
+The model sees an input and is taught what the correct corresponding target should be. If we later see a different input with the same label, we learn to associate it with the same target.">
+<meta name="author" content="">
+<link rel="canonical" href="http://localhost:1313/posts/rl_101_01/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.cd9298b33628769aa1bc1acebbbfd7aa11ce81dfe03484d479e1907760249a1d.css" integrity="sha256-zZKYszYodpqhvBrOu7/XqhHOgd/gNITUeeGQd2Akmh0=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/posts/rl_101_01/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    }
+
+</script>
+<script>
+window.MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']],
+    displayMath: [['$$', '$$'], ['\\[', '\\]']],
+    processEscapes: true
+  },
+  svg: {
+    fontCache: 'global'
+  }
+};
+</script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js"></script>
+
+
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="header-nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Yunyang Mo (Alt + H)">Yunyang Mo</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" class="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg class="moon" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg class="sun" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu" class="menu">
+            <li>
+                <a href="http://localhost:1313/posts/" title="Posts">
+                    <span>Posts</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/archives/" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <nav class="breadcrumbs" role="navigation" aria-label="Breadcrumb">
+            <a href="/">Home</a>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
+                <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+            <a href="/posts/">Posts</a>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
+        <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+</nav>
+    <h1 class="post-title entry-hint-parent">
+      Why we need Reinforcement Learning?
+    </h1>
+    <div class="post-meta">
+
+<span title='2026-06-22 00:00:00 +0000 UTC'>June 22, 2026</span>&nbsp;·&nbsp;<span>9 min</span>
+
+</div>
+  </header> <details class="toc" >
+    <summary accesskey="c" title="(Alt + C)">
+        <span class="title">Table of Contents</span>
+    </summary>
+
+    <div class="inner"><ul>
+            <li>
+                <a href="#1-what-is-reinforcement-learning" aria-label="1. What is Reinforcement Learning?">1. What is Reinforcement Learning?</a></li>
+            <li>
+                <a href="#2-markov-assumption-and-policy-forms" aria-label="2. Markov Assumption and Policy Forms">2. Markov Assumption and Policy Forms</a></li>
+            <li>
+                <a href="#3-why-is-a-markov-policy-enough" aria-label="3. Why is a Markov Policy Enough?">3. Why is a Markov Policy Enough?</a></li>
+            <li>
+                <a href="#4-how-do-we-know-whether-a-policy-is-good" aria-label="4. How Do We Know Whether a Policy is Good?">4. How Do We Know Whether a Policy is Good?</a></li>
+            <li>
+                <a href="#5-monte-carlo-estimation-of-value" aria-label="5. Monte Carlo Estimation of Value">5. Monte Carlo Estimation of Value</a></li>
+            <li>
+                <a href="#6-bellman-equation-computing-value-recursively" aria-label="6. Bellman Equation: Computing Value Recursively">6. Bellman Equation: Computing Value Recursively</a></li>
+            <li>
+                <a href="#7-what-does-bellman-bootstrapping-sacrifice" aria-label="7. What Does Bellman Bootstrapping Sacrifice?">7. What Does Bellman Bootstrapping Sacrifice?</a></li>
+            <li>
+                <a href="#8-convergence-of-the-bellman-equation" aria-label="8. Convergence of the Bellman Equation">8. Convergence of the Bellman Equation</a></li>
+            <li>
+                <a href="#81-banach-fixed-point-theorem" aria-label="8.1 Banach Fixed Point Theorem">8.1 Banach Fixed Point Theorem</a></li>
+            <li>
+                <a href="#82-why-is-the-bellman-operator-a-contraction" aria-label="8.2 Why is the Bellman Operator a Contraction?">8.2 Why is the Bellman Operator a Contraction?</a></li>
+            <li>
+                <a href="#references" aria-label="References">References</a>
+            </li>
+        </ul>
+    </div>
+</details>
+
+  <div class="post-content md-content"><hr>
+<h2 id="1-what-is-reinforcement-learning">1. What is Reinforcement Learning?<a hidden class="anchor" aria-hidden="true" href="#1-what-is-reinforcement-learning">#</a></h2>
+<p>Reinforcement Learning (RL), at its core, is a method of learning. <a href="https://en.wikipedia.org/wiki/Learning">Learning</a> based on wikipedia, is the process of acquiring new understanding and knowledge. To simplify it: when you see something, you know something more than that.</p>
+<p>Some classic ways of learning can be shown as examples.</p>
+<p>In <a href="https://en.wikipedia.org/wiki/Supervised_learning">supervised learning</a>, we learn from supervised examples:</p>
+<p>$$
+\text{input} \rightarrow \text{target}
+$$</p>
+<p><img alt="Supervised learning dog example" loading="lazy" src="/dog.png"></p>
+<p>The model sees an input and is taught what the correct corresponding target should be. If we later see a different input with the same label, we learn to associate it with the same target.</p>
+<p>In <a href="https://en.wikipedia.org/wiki/Unsupervised_learning">unsupervised learning</a>, we are not given explicit labels. Instead, the model tries to discover hidden structures, patterns, or relationships within the data by itself.
+<img alt="Unsupervised learning dog example" loading="lazy" src="/knn.png"></p>
+<p>Reinforcement Learning is different. In RL, an agent learns by <strong>interacting with an environment</strong>. It takes actions, observes the consequences, receives rewards, which are not necessarily just numbers, and gradually <strong>reinforces</strong> its behavior toward directions that may lead to higher long-term return.</p>
+<div style="display: flex; align-items: center; gap: 24px; margin: 24px 0;">
+  <img src="/rl.png" alt="RL example" width="450">
+  <p>
+    So RL is not only about one-step causal reasoning. It is about training a
+    <strong>policy</strong> and developing an understanding of
+    <strong>value</strong>.
+  </p>
+</div>
+<p>A policy answers:</p>
+<p>$$
+\text{What should I do?}
+$$</p>
+<p>A value function answers:</p>
+<p>$$
+\text{How good is this situation, if I keep behaving like this?}
+$$</p>
+<hr>
+<h2 id="2-markov-assumption-and-policy-forms">2. Markov Assumption and Policy Forms<a hidden class="anchor" aria-hidden="true" href="#2-markov-assumption-and-policy-forms">#</a></h2>
+<p>When studying RL, we usually begin with an important assumption: the environment satisfies the <strong>Markov property</strong>.</p>
+<p>$$
+P(s_{t+1} \mid s_t, a_t, s_{t-1}, a_{t-1}, \dots)=
+P(s_{t+1} \mid s_t, a_t)
+$$</p>
+<p>This means that, given the current state and action, the next state no longer depends on the entire past history.</p>
+<p>In other words, the current state is assumed to contain all the information needed for predicting the future.</p>
+<p>Under this assumption, we can define two broad forms of policies.</p>
+<p>A <strong>Markov policy</strong> only depends on the current state:</p>
+<p>$$
+\pi_\theta(a \mid s): \mathcal{S} \rightarrow \Delta(\mathcal{A})
+$$</p>
+<p>A more general history-dependent policy may depend on the full trajectory so far:</p>
+<p>$$
+\pi_\theta(a_t \mid s_{1:t}, a_{1:t-1})
+$$</p>
+<p>In principle, a general policy has more information. It can look at the whole past. But in a Markov environment, the current state already summarizes the useful part of the past.</p>
+<p>The goal of both policies is the same: maximize the expected return from the initial state.</p>
+<p>$$
+\max_\pi V^\pi(s_1)
+$$</p>
+<p align="center">
+  <img src="/bean.png" alt="value maximization" width="300">
+</p>
+<hr>
+<h2 id="3-why-is-a-markov-policy-enough">3. Why is a Markov Policy Enough?<a hidden class="anchor" aria-hidden="true" href="#3-why-is-a-markov-policy-enough">#</a></h2>
+<p>A beautiful result in RL says that, in a Markov environment, we do not lose optimality by restricting ourselves to Markov policies.</p>
+<p>More formally, for any history-dependent policy $\pi$, there exists a Markov policy $\mu$ such that</p>
+<p>$$
+V^{\pi}(s_1) \leq V^\mu(s_1)
+$$</p>
+<p>The intuition is simple.</p>
+<p>If the state really contains all information needed for future prediction, then the agent does not need to remember the entire past. At each state, it only needs to choose an action that leads to the best possible future.</p>
+<p>So the optimal decision can be made from the current state alone.</p>
+<p>This is one of the reasons why <a href="https://en.wikipedia.org/wiki/Markov_decision_process">Markov Decision Processes</a> are so central in RL. They give us a clean mathematical world where memory can be replaced by state [3].</p>
+<hr>
+<h2 id="4-how-do-we-know-whether-a-policy-is-good">4. How Do We Know Whether a Policy is Good?<a hidden class="anchor" aria-hidden="true" href="#4-how-do-we-know-whether-a-policy-is-good">#</a></h2>
+<p>In RL, the objective is special: what we optimize is also how we measure success. The goal itself becomes the metric — accumulated reward.</p>
+<p>If a policy achieves a higher return, we call it better.</p>
+<p>In a finite-horizon setting, the value function is defined as</p>
+<p>$$
+V_h^\pi(s)=
+E_{\pi}
+\left[
+\sum_{\tau=h}^{H} r(s_{\tau}, a_{\tau})
+\mid s_h = s
+\right]
+$$</p>
+<p>It means: starting from state $s$ at time $h$, if we follow policy $\pi$, what total reward do we expect to collect until the end?</p>
+<p>The action-value function, or Q-function, also conditions on the first action:</p>
+<p>$$
+Q_h^\pi(s,a)=
+E_\pi
+\left[
+\sum_{h&rsquo;=h}^{H} r(s_{h&rsquo;}, a_{h&rsquo;})
+\mid s_h = s, a_h = a
+\right]
+$$</p>
+<p>So $V^\pi$ tells us how good a state is, while $Q^\pi$ tells us how good a state-action pair is.</p>
+<p>This small difference is extremely important. Once we know $Q^\pi(s,a)$, action selection becomes easier: we can compare actions directly.</p>
+<hr>
+<h2 id="5-monte-carlo-estimation-of-value">5. Monte Carlo Estimation of Value<a hidden class="anchor" aria-hidden="true" href="#5-monte-carlo-estimation-of-value">#</a></h2>
+<p>One natural way to estimate value is very direct: start from a state, roll out the policy many times, and average the returns.</p>
+<p>This is the Monte Carlo idea [1].</p>
+<p>$$
+V^\pi(s)
+\approx
+\frac{1}{N}
+\sum_{i=1}^{N}
+\left(
+\sum_{h=1}^{H} r(s_h, a_h)
+\right)_i
+$$</p>
+<p>Here, $N$ is the number of sampled episodes, and $H$ is the horizon length.</p>
+<p>Monte Carlo estimation is conceptually clean. If we sample enough trajectories, the average return becomes a good estimate of the true value.</p>
+<p>But the problem is variance.</p>
+<p>To see this, consider a simplified infinite-horizon discounted return:</p>
+<p>$$
+G = \sum_{t=0}^{\infty} \gamma^t r_t
+$$</p>
+<p>Assume the rewards are independent and identically distributed:</p>
+<p>$$
+r_t \sim \mathcal{D},
+\qquad
+E[r_t] = \mu,
+\qquad
+\mathrm{Var}(r_t) = \sigma^2
+$$</p>
+<p>Then the variance of the return is</p>
+<p>$$
+\begin{aligned}
+\mathrm{Var}(G)
+&amp;=
+\mathrm{Var}
+\left(
+\sum_{t=0}^{\infty} \gamma^t r_t
+\right)
+<br>
+&amp;=
+\sum_{t=0}^{\infty}
+\gamma^{2t}
+\mathrm{Var}(r_t)
+<br>
+&amp;=
+\sigma^2
+\sum_{t=0}^{\infty}
+(\gamma^2)^t
+<br>
+&amp;=
+\frac{\sigma^2}{1-\gamma^2}
+\end{aligned}
+$$</p>
+<p>When $\gamma$ approaches 1, the horizon becomes effectively long. Since</p>
+<p>$$
+1-\gamma^2=
+(1-\gamma)(1+\gamma)
+\approx
+2(1-\gamma)
+$$</p>
+<p>we get</p>
+<p>$$
+\mathrm{Var}(G)
+\approx
+\frac{\sigma^2}{2(1-\gamma)}
+$$</p>
+<p>This shows why Monte Carlo methods can be noisy in long-horizon problems. The longer the effective horizon, the more future randomness is accumulated into the return estimate.</p>
+<p>Also, in real scenarios, rewards are rarely i.i.d. The reward at one step is often related to what happened before and what will happen next, so the randomness does not simply average out. This makes estimating return even more unstable.</p>
+<hr>
+<h2 id="6-bellman-equation-computing-value-recursively">6. Bellman Equation: Computing Value Recursively<a hidden class="anchor" aria-hidden="true" href="#6-bellman-equation-computing-value-recursively">#</a></h2>
+<p>The Bellman equation gives another way to compute value recursively, and is the core idea behind dynamic programming in sequential decision problems [2].</p>
+<p>Instead of waiting until the end of the episode, it breaks the return into two parts:</p>
+<ol>
+<li>the immediate reward;</li>
+<li>the value of the next state.</li>
+</ol>
+<p>For a fixed policy $\pi$, the expectation Bellman equation is</p>
+<p>$$
+V_h^\pi(s)=
+\sum_a \pi(a \mid s) Q_h^\pi(s,a)
+$$</p>
+<p>and</p>
+<p>$$
+Q_h^\pi(s,a)=
+r_h(s,a)
++
+E_{s&rsquo; \sim P(\cdot \mid s,a)}
+\left[
+V_{h+1}^\pi(s&rsquo;)
+\right]
+$$</p>
+<p>This is the central recursive idea in RL.</p>
+<p>A value is not estimated only by rolling out to the end. It can also be estimated by looking one step ahead and bootstrapping from another value estimate.</p>
+<p>In the infinite-horizon discounted case, a typical one-step TD target is</p>
+<p>$$
+Q(s_t,a_t)=
+r_t
++
+\gamma Q(s_{t+1}, a_{t+1})
+$$</p>
+<p>Compared with Monte Carlo, this target depends only on the immediate reward and the estimated value of the next state-action pair.</p>
+<p>Its randomness mainly comes from two sources:</p>
+<p>$$
+\begin{aligned}
+\mathrm{Var}
+\left(
+r_t + \gamma Q(s_{t+1}, a_{t+1})
+\right)
+&amp;=
+\mathrm{Var}(r_t)
++
+\gamma^2
+\mathrm{Var}_{s&rsquo; \sim P}
+\left(
+Q(s&rsquo;,a&rsquo;)
+\right)
+\end{aligned}
+$$</p>
+<p>This is often much lower variance than summing rewards over a long trajectory.</p>
+<p>But this lower variance is not free.</p>
+<hr>
+<h2 id="7-what-does-bellman-bootstrapping-sacrifice">7. What Does Bellman Bootstrapping Sacrifice?<a hidden class="anchor" aria-hidden="true" href="#7-what-does-bellman-bootstrapping-sacrifice">#</a></h2>
+<p>Monte Carlo estimation is unbiased in the sense that, if we sample complete trajectories, the expected return equals the true value:</p>
+<p>$$
+E[G_t] = V^\pi(s_t)
+$$</p>
+<p>Bellman-style methods use bootstrapping. The target depends on the current estimate of the value function.</p>
+<p>For example, if we use a parameterized Q-function $Q_\theta$, then the target itself contains $Q_\theta$:</p>
+<p>$$
+r_t + \gamma Q_\theta(s_{t+1}, a_{t+1})
+$$</p>
+<p>This introduces bias, especially early in training when $Q_\theta$ is inaccurate.</p>
+<p>So there is a classic trade-off:</p>
+<p>$$
+\text{Monte Carlo: low bias, high variance}
+$$</p>
+<p>$$
+\text{Bellman / TD: higher bias during learning, lower variance}
+$$</p>
+<p>A large part of RL algorithm design can be understood as navigating this trade-off.</p>
+<hr>
+<h2 id="8-convergence-of-the-bellman-equation">8. Convergence of the Bellman Equation<a hidden class="anchor" aria-hidden="true" href="#8-convergence-of-the-bellman-equation">#</a></h2>
+<p>Since Bellman methods rely on their own current estimates, a natural question appears:</p>
+<p>Why should this process converge?</p>
+<p>To answer this, we need the idea of a <a href="https://en.wikipedia.org/wiki/Fixed_point_(mathematics)">fixed point</a>.</p>
+<p>For optimal control, the Bellman optimality equation is</p>
+<p>$$
+V_h(s)=
+\max_a Q_h(s,a)
+$$</p>
+<p>with</p>
+<p>$$
+Q_h(s,a)=
+r_h(s,a)
++
+\gamma
+E_{s&rsquo; \sim P(\cdot \mid s,a)}
+\left[
+V*{h+1}(s&rsquo;)
+\right]
+$$</p>
+<p>The expectation Bellman equation evaluates a fixed policy. The optimality Bellman equation searches for the best policy.</p>
+<p>This reflects a deep duality in RL:</p>
+<ul>
+<li>policy evaluation asks: how good is this policy?</li>
+<li>policy optimization asks: how good can we possibly be?</li>
+</ul>
+<p>To study convergence, define the Bellman optimality operator $\mathcal{T}$:</p>
+<p>$$
+(\mathcal{T}V)(s)=
+\max_a
+\left(
+r(s,a)
++
+\gamma
+\sum_{s&rsquo;} P(s&rsquo; \mid s,a) V(s&rsquo;)
+\right)
+$$</p>
+<p>Then solving the Bellman equation is equivalent to finding a fixed point:</p>
+<p>$$
+V = \mathcal{T}V
+$$</p>
+<hr>
+<h2 id="81-banach-fixed-point-theorem">8.1 Banach Fixed Point Theorem<a hidden class="anchor" aria-hidden="true" href="#81-banach-fixed-point-theorem">#</a></h2>
+<p>The mathematical tool behind this convergence story is the <a href="https://en.wikipedia.org/wiki/Banach_fixed-point_theorem">Banach Fixed Point Theorem</a> [4].</p>
+<p>Let $(X,d)$ be a complete metric space. Suppose $\mathcal{T}: X \rightarrow X$ is a contraction mapping, meaning that for some $0 \leq \gamma &lt; 1$,</p>
+<p>$$
+d(\mathcal{T}u, \mathcal{T}v)
+\leq
+\gamma d(u,v),
+\qquad
+\forall u,v \in X
+$$</p>
+<p>Then three things hold.</p>
+<p>First, $\mathcal{T}$ has a unique fixed point $V^*$:</p>
+<p>$$
+\mathcal{T}V^* = V^*
+$$</p>
+<p>Second, starting from any initial guess $V_0$, the sequence</p>
+<p>$$
+V_{k+1} = \mathcal{T}V_k
+$$</p>
+<p>converges to $V^*$.</p>
+<p>Third, the error decreases geometrically. For example, an a priori bound is</p>
+<p>$$
+d(V_k, V^*)
+\leq
+\frac{\gamma^k}{1-\gamma}
+d(V_1,V_0)
+$$</p>
+<p>and an a posteriori bound is</p>
+<p>$$
+d(V_k,V^*)
+\leq
+\frac{\gamma}{1-\gamma}
+d(V_k,V_{k-1})
+$$</p>
+<p>This theorem gives the formal backbone of value iteration [1, 3].</p>
+<hr>
+<h2 id="82-why-is-the-bellman-operator-a-contraction">8.2 Why is the Bellman Operator a Contraction?<a hidden class="anchor" aria-hidden="true" href="#82-why-is-the-bellman-operator-a-contraction">#</a></h2>
+<p>We can prove that the Bellman optimality operator shrinks the distance between any two value functions.</p>
+<p>Using the infinity norm,</p>
+<p>$$
+\lVert V-U \rVert_\infty=
+\max_s |V(s)-U(s)|
+$$</p>
+<p>we have</p>
+<p>$$
+\begin{aligned}
+\left| {T}V - {T}U \right|_\infty
+&amp;=
+\max_s
+\left|
+({T}V)(s)-
+({T}U)(s)
+\right|
+\end{aligned}
+$$</p>
+<p>$$
+\begin{aligned}
+&amp;=
+\max_s
+\left|
+\max_a
+\left(
+r(s,a)+
+\gamma E_{s&rsquo; \sim P(\cdot \mid s,a)}
+\left[
+V(s&rsquo;)
+\right]
+\right)-
+\max_a
+\left(
+r(s,a)+
+\gamma E_{s&rsquo; \sim P(\cdot \mid s,a)}
+\left[
+U(s&rsquo;)
+\right]
+\right)
+\right|
+\end{aligned}
+$$</p>
+<p>$$
+\begin{aligned}
+&amp;\leq
+\max_s \max_a
+\left|
+\gamma
+\operatorname{E}_{s&rsquo; \sim P(\cdot \mid s,a)}
+\left[
+V(s&rsquo;) - U(s&rsquo;)
+\right]
+\right|
+\end{aligned}
+$$</p>
+<p>$$
+\begin{aligned}
+&amp;=
+\gamma
+\max_s \max_a
+\left|
+\sum_{s&rsquo;} P(s&rsquo; \mid s,a)
+\left(
+V(s&rsquo;) - U(s&rsquo;)
+\right)
+\right|
+\end{aligned}
+$$</p>
+<p>$$
+\begin{aligned}
+&amp;\leq
+\gamma
+\max_s \max_a
+\sum_{s&rsquo;} P(s&rsquo; \mid s,a)
+\left|
+V(s&rsquo;) - U(s&rsquo;)
+\right|
+\
+&amp;\leq
+\gamma
+\left| V-U \right|_\infty .
+\end{aligned}
+$$
+Because $\gamma &lt; 1$, the Bellman operator is a contraction mapping.</p>
+<p>Therefore, by the Banach Fixed Point Theorem, value iteration converges to the unique fixed point $V^*$.</p>
+<p>This is one of the most elegant results in RL: a simple recursive update can be guaranteed to converge, not because of magic, but because each Bellman update pulls value estimates closer together.</p>
+<hr>
+<h2 id="references">References<a hidden class="anchor" aria-hidden="true" href="#references">#</a></h2>
+<p>[1] Richard S. Sutton and Andrew G. Barto. <em>Reinforcement Learning: An Introduction</em>. 2nd edition, MIT Press, 2018.<br>
+*Available online: <a href="http://incompleteideas.net/book/the-book-2nd.html">http://incompleteideas.net/book/the-book-2nd.html</a></p>
+<p>[2] Richard Bellman. <em>Dynamic Programming</em>. Princeton University Press, 1957.</p>
+<p>[3] Martin L. Puterman. <em>Markov Decision Processes: Discrete Stochastic Dynamic Programming</em>. Wiley, 1994.</p>
+<p>[4] Stefan Banach. “Sur les opérations dans les ensembles abstraits et leur application aux équations intégrales.” <em>Fundamenta Mathematicae</em>, 3:133–181, 1922.</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/reinforcement-learning/">Reinforcement Learning</a></li>
+      <li><a href="http://localhost:1313/tags/bellman-equation/">Bellman Equation</a></li>
+      <li><a href="http://localhost:1313/tags/monte-carlo/">Monte Carlo</a></li>
+      <li><a href="http://localhost:1313/tags/value-function/">Value Function</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/hello-world/">
+    <span class="title">« Prev</span>
+    <span>Hello World</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/rl_101_02/">
+    <span class="title">Next »</span>
+    <span>From Value Function to Policy Optimization</span>
+  </a>
+</nav>
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2026 <a href="http://localhost:1313/">Yunyang Mo</a></span> · 
+
+    
+    
+    <span>
+        Powered by
+        <a href="https://gohugo.io/?utm_source=papermod" rel="noopener" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" id="top-link" class="top-link hidden" aria-label="go to top" title="Go to Top (Alt + G)" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevrons-up">
+        <polyline points="17 11 12 6 7 11"></polyline>
+        <polyline points="17 18 12 13 7 18"></polyline>
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var toplink = document.getElementById("top-link");
+    window.onscroll = function () {
+        const scrollThreshold = window.innerHeight;
+        if (document.body.scrollTop > scrollThreshold || document.documentElement.scrollTop > scrollThreshold) {
+            toplink.classList.remove("hidden");
+        } else {
+            toplink.classList.add("hidden");
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

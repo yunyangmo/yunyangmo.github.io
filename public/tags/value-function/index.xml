@@ -10,9 +10,9 @@
     <atom:link href="http://localhost:1313/tags/value-function/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Why we need Reinforcement Learning?</title>
-      <link>http://localhost:1313/posts/rl_math_01/</link>
+      <link>http://localhost:1313/posts/rl_101_01/</link>
       <pubDate>Mon, 22 Jun 2026 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/rl_math_01/</guid>
+      <guid>http://localhost:1313/posts/rl_101_01/</guid>
       <description>&lt;hr&gt;
 &lt;h2 id=&#34;1-what-is-reinforcement-learning&#34;&gt;1. What is Reinforcement Learning?&lt;/h2&gt;
 &lt;p&gt;Reinforcement Learning (RL), at its core, is a method of learning. &lt;a href=&#34;https://en.wikipedia.org/wiki/Learning&#34;&gt;Learning&lt;/a&gt; based on wikipedia, is the process of acquiring new understanding and knowledge. To simplify it: when you see something, you know something more than that.&lt;/p&gt;
