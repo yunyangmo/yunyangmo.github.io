@@ -22,6 +22,10 @@ menu:
       name: Posts
       url: /posts/
       weight: 10
+    - identifier: notes
+      name: Notes
+      url: /notes/
+      weight: 15
     - identifier: archive
       name: Archive
       url: /archives/

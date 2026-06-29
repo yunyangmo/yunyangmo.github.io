@@ -1,0 +1,78 @@
+{{- define "main" }}
+
+{{- $posts := where site.RegularPages "Section" "posts" }}
+{{- $notes := where site.RegularPages "Section" "notes" }}
+
+<header class="home-intro">
+
+  <div class="home-title">
+    Hi, this is Yunyang.
+  </div>
+
+  <div class="home-subtitle">
+    Some messy thoughts on reinforcement learning, robotics,<br/>
+    and how brains make all this look easy.
+  </div>
+
+</header>
+
+<section style="margin-top: 2.8rem;">
+  <h2>Posts</h2>
+
+  {{- if $posts }}
+    {{- range first 5 $posts.ByDate.Reverse }}
+    <article class="post-entry">
+      <header class="entry-header">
+        <h2>
+          <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+        </h2>
+      </header>
+
+      <footer class="entry-footer">
+        {{- if not .Date.IsZero }}
+        <span>{{ .Date.Format "January 2, 2006" }}</span>
+        {{- end }}
+      </footer>
+    </article>
+    {{- end }}
+  {{- else }}
+    <p class="post-description">No posts yet.</p>
+  {{- end }}
+
+  <p style="margin-top: 1rem;">
+    <a href="/posts/">View all posts →</a>
+  </p>
+</section>
+
+<section style="margin-top: 3.2rem;">
+  <h2>Notes</h2>
+
+  {{- if $notes }}
+    {{- range $notes.ByWeight }}
+    <article class="post-entry">
+      <header class="entry-header">
+        <h2>
+          <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+        </h2>
+      </header>
+
+      <footer class="entry-footer">
+        {{- if .Params.series }}
+        <span>{{ .Params.series }}</span>
+        {{- end }}
+        {{- if .Params.weight }}
+        <span> · Note {{ .Params.weight }}</span>
+        {{- end }}
+      </footer>
+    </article>
+    {{- end }}
+  {{- else }}
+    <p class="post-description">No notes yet.</p>
+  {{- end }}
+
+  <p style="margin-top: 1rem;">
+    <a href="/notes/">View all notes →</a>
+  </p>
+</section>
+
+{{- end }}

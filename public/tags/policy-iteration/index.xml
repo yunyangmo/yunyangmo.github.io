@@ -2,26 +2,22 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Policy Iteration on Yunyang Mo</title>
-    <link>http://localhost:1313/tags/policy-iteration/</link>
+    <link>http://localhost:40729/tags/policy-iteration/</link>
     <description>Recent content in Policy Iteration on Yunyang Mo</description>
     <generator>Hugo</generator>
     <language>en-us</language>
     <lastBuildDate>Sun, 28 Jun 2026 00:00:00 +0000</lastBuildDate>
-    <atom:link href="http://localhost:1313/tags/policy-iteration/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://localhost:40729/tags/policy-iteration/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>From Value Function to Policy Optimization</title>
-      <link>http://localhost:1313/posts/rl_101_02/</link>
+      <link>http://localhost:40729/notes/rl_101_02/</link>
       <pubDate>Sun, 28 Jun 2026 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/rl_101_02/</guid>
-      <description>&lt;hr&gt;
-&lt;h2 id=&#34;preface&#34;&gt;Preface&lt;/h2&gt;
-&lt;p&gt;In &lt;a href=&#34;http://localhost:1313/posts/rl_101_01/&#34;&gt;previous note&lt;/a&gt;, we introduced the basic idea of Reinforcement Learning and discussed how the Bellman equation can be used to compute the value function.&lt;/p&gt;
-&lt;p&gt;Intuitively, the value function gives us a way to describe how good a state, or a state-action pair is.&lt;/p&gt;
+      <guid>http://localhost:40729/notes/rl_101_02/</guid>
+      <description>&lt;h2 id=&#34;preface&#34;&gt;Preface&lt;/h2&gt;
+&lt;p&gt;In the &lt;a href=&#34;http://localhost:40729/notes/rl_101_01/&#34;&gt;previous note&lt;/a&gt;, we introduced the basic idea of Reinforcement Learning and discussed how the Bellman equation can be used to compute the value function.&lt;/p&gt;
+&lt;p&gt;Intuitively, the value function tells us how much future return we can expect from a state, or from taking a particular action in that state.&lt;/p&gt;
 &lt;p&gt;In this section, we go one step further.&lt;/p&gt;
-&lt;p&gt;If value tells us how good something is, then a natural question is:&lt;/p&gt;
-&lt;p&gt;$$
-\text{How can we use value to improve the policy?}
-$$&lt;/p&gt;</description>
+&lt;p&gt;If value tells us how good something is, then a natural question is:&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>

@@ -1,0 +1,32 @@
+{{- define "main" }}
+
+<header class="page-header">
+  <h1>{{ .Title }}</h1>
+  {{- if .Description }}
+  <div class="post-description">
+    {{ .Description }}
+  </div>
+  {{- end }}
+</header>
+
+{{- $pages := .Pages.ByWeight }}
+
+{{- range $pages }}
+<article class="post-entry">
+  <header class="entry-header">
+    <h2>
+      <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+    </h2>
+  </header>
+
+  
+
+  <footer class="entry-footer">
+    {{- if .Params.series }}
+    <span>{{ .Params.series }}</span>
+    {{- end }}
+  </footer>
+</article>
+{{- end }}
+
+{{- end }}
