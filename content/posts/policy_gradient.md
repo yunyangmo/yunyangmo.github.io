@@ -362,7 +362,7 @@ Future progress may therefore come not from a universally better clipping rule, 
 
 ## References
 
-[1] Sham Kakade and John Langford. [*Approximately Optimal Reinforcement Learning*](https://api.semanticscholar.org/CorpusID:9046608). ICML, 2002.
+[1] Sham Kakade and John Langford. [*Approximately Optimal  Approximate Reinforcement Learning*](https://dl.acm.org/doi/abs/10.5555/645531.656005). ICML, 2002.
 
 [2] Richard S. Sutton, David McAllester, Satinder Singh, and Yishay Mansour. [*Policy Gradient Methods for Reinforcement Learning with Function Approximation*](https://papers.nips.cc/paper_files/paper/1999/hash/464d828b85b0bed98e80ade0a5c43b0f-Abstract.html). NeurIPS, 1999.
 
