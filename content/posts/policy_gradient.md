@@ -356,6 +356,7 @@ GRPO and GSPO illustrate two distinct places where a new policy objective can in
 
 Future progress may therefore come not from a universally better clipping rule, but from objectives that make their assumptions about data, credit, and policy movement explicit. The central question remains the one that began this post: **how can an agent learn better behavior from experience without pushing its policy a step too far?**
 
+{{< applause >}}
 
 ---
 

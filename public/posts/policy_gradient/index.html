@@ -125,12 +125,6 @@ window.MathJax = {
 </nav>
     <h1 class="post-title entry-hint-parent">
       A Policy Step Too Far
-      <span class="entry-hint" title="Draft">
-        <svg xmlns="http://www.w3.org/2000/svg" height="35" viewBox="0 -960 960 960" fill="currentColor">
-          <path
-            d="M160-410v-60h300v60H160Zm0-165v-60h470v60H160Zm0-165v-60h470v60H160Zm360 580v-123l221-220q9-9 20-13t22-4q12 0 23 4.5t20 13.5l37 37q9 9 13 20t4 22q0 11-4.5 22.5T862.09-380L643-160H520Zm300-263-37-37 37 37ZM580-220h38l121-122-18-19-19-18-122 121v38Zm141-141-19-18 37 37-18-19Z" />
-        </svg>
-      </span>
     </h1>
     <div class="post-description">
       How an agent turns experience into better behavior—from policy improvement to PPO, and the estimation, approximation, and trust behind each update.
@@ -413,24 +407,16 @@ $$</p>
 <p>The length normalization keeps the ratio numerically manageable, but it also means that $s _ i(\theta)$ is not the exact importance ratio between the two trajectory distributions. GSPO therefore does not eliminate approximation. It chooses a different one: greater alignment between the reward and update granularity in exchange for an inexact distribution correction.</p>
 <p>GRPO and GSPO illustrate two distinct places where a new policy objective can intervene. GRPO changes the improvement signal while largely preserving PPO’s update mechanism. GSPO retains the group-relative signal but changes what counts as a policy change.</p>
 <p>Future progress may therefore come not from a universally better clipping rule, but from objectives that make their assumptions about data, credit, and policy movement explicit. The central question remains the one that began this post: <strong>how can an agent learn better behavior from experience without pushing its policy a step too far?</strong></p>
-<hr>
-<h2 id="references">References<a hidden class="anchor" aria-hidden="true" href="#references">#</a></h2>
-<p>[1] Sham Kakade and John Langford. <a href="https://api.semanticscholar.org/CorpusID:9046608"><em>Approximately Optimal Reinforcement Learning</em></a>. ICML, 2002.</p>
-<p>[2] Richard S. Sutton, David McAllester, Satinder Singh, and Yishay Mansour. <a href="https://papers.nips.cc/paper_files/paper/1999/hash/464d828b85b0bed98e80ade0a5c43b0f-Abstract.html"><em>Policy Gradient Methods for Reinforcement Learning with Function Approximation</em></a>. NeurIPS, 1999.</p>
-<p>[3] John Schulman, Sergey Levine, Pieter Abbeel, Michael Jordan, and Philipp Moritz. <a href="https://proceedings.mlr.press/v37/schulman15.html"><em>Trust Region Policy Optimization</em></a>. ICML, 2015.</p>
-<p>[4] John Schulman, Filip Wolski, Prafulla Dhariwal, Alec Radford, and Oleg Klimov. <a href="https://arxiv.org/abs/1707.06347"><em>Proximal Policy Optimization Algorithms</em></a>. arXiv, 2017.</p>
-<p>[5] Zhihong Shao, Peiyi Wang, Qihao Zhu, Runxin Xu, Junxian Song, Mingchuan Zhang, Y.K. Li, Y. Wu, and Daya Guo. <a href="https://arxiv.org/abs/2402.03300"><em>DeepSeekMath: Pushing the Limits of Mathematical Reasoning in Open Language Models</em></a>. arXiv, 2024.</p>
-<p>[6] <a href="https://arxiv.org/abs/2507.18071"><em>Group Sequence Policy Optimization</em></a>. arXiv, 2025.</p>
-<!-- https://applause.chabouis.fr/get-claps?url=your-URL -->
-
-  </div>
 
 
-<link rel="stylesheet" href="https://unpkg.com/applause-button/dist/applause-button.css">
-<script defer src="https://unpkg.com/applause-button/dist/applause-button.js"></script>
+<link rel="stylesheet"
+      href="https://unpkg.com/applause-button/dist/applause-button.css">
+
+<script defer
+        src="https://unpkg.com/applause-button/dist/applause-button.js">
+</script>
 
 <style>
-   
   .applause-wrapper {
     clear: both !important;
     display: flex !important;
@@ -438,12 +424,11 @@ $$</p>
     align-items: center !important;
     justify-content: center !important;
     margin-top: 60px !important;
-    margin-bottom: 140px !important;  
+    margin-bottom: 140px !important;
     padding: 10px 0 !important;
     box-sizing: border-box !important;
   }
 
-   
   .applause-wrapper applause-button {
     display: inline-block !important;
     width: 60px !important;
@@ -452,23 +437,20 @@ $$</p>
     flex-shrink: 0 !important;
   }
 
-   
   .applause-wrapper applause-button .hands-flat path:first-child,
   .applause-wrapper applause-button .hands-outline path {
     d: path("M30 48.35 l-2.9-2.64 C16.8 36.37 10 30.21 10 22.65 C10 16.49 14.84 11.65 21 11.65 c3.48 0 6.82 1.62 9 4.18 C32.18 13.27 35.52 11.65 39 11.65 C45.16 11.65 50 16.49 50 22.65 c0 7.56-6.8 13.72-17.1 23.08 L30 48.35z") !important;
     fill: #e63946 !important;
   }
 
-   
   .applause-wrapper applause-button .hands-flat path:not(:first-child) {
     display: none !important;
   }
 
-   
   .applause-prompt {
     font-size: 1.5rem !important;
     color: var(--secondary, #7c7c7c) !important;
-    margin-top: 60px !important;    
+    margin-top: 60px !important;
     margin-bottom: 0 !important;
     font-style: italic !important;
     letter-spacing: 0.3px !important;
@@ -481,16 +463,30 @@ $$</p>
     api="https://applause.chabouis.fr"
     url="http://localhost:1313/posts/policy_gradient/"
     color="red"
-    multiclap="false"
     max-claps="1">
   </applause-button>
-  <p class="applause-prompt">Press like if you found it useful!</p>
+
+  <p class="applause-prompt">
+    Press like if you found it useful!
+  </p>
 </div>
+
+<hr>
+<h2 id="references">References<a hidden class="anchor" aria-hidden="true" href="#references">#</a></h2>
+<p>[1] Sham Kakade and John Langford. <a href="https://api.semanticscholar.org/CorpusID:9046608"><em>Approximately Optimal Reinforcement Learning</em></a>. ICML, 2002.</p>
+<p>[2] Richard S. Sutton, David McAllester, Satinder Singh, and Yishay Mansour. <a href="https://papers.nips.cc/paper_files/paper/1999/hash/464d828b85b0bed98e80ade0a5c43b0f-Abstract.html"><em>Policy Gradient Methods for Reinforcement Learning with Function Approximation</em></a>. NeurIPS, 1999.</p>
+<p>[3] John Schulman, Sergey Levine, Pieter Abbeel, Michael Jordan, and Philipp Moritz. <a href="https://proceedings.mlr.press/v37/schulman15.html"><em>Trust Region Policy Optimization</em></a>. ICML, 2015.</p>
+<p>[4] John Schulman, Filip Wolski, Prafulla Dhariwal, Alec Radford, and Oleg Klimov. <a href="https://arxiv.org/abs/1707.06347"><em>Proximal Policy Optimization Algorithms</em></a>. arXiv, 2017.</p>
+<p>[5] Zhihong Shao, Peiyi Wang, Qihao Zhu, Runxin Xu, Junxian Song, Mingchuan Zhang, Y.K. Li, Y. Wu, and Daya Guo. <a href="https://arxiv.org/abs/2402.03300"><em>DeepSeekMath: Pushing the Limits of Mathematical Reasoning in Open Language Models</em></a>. arXiv, 2024.</p>
+<p>[6] <a href="https://arxiv.org/abs/2507.18071"><em>Group Sequence Policy Optimization</em></a>. arXiv, 2025.</p>
+<!-- https://applause.chabouis.fr/get-claps?url=your-URL -->
+
+  </div>
 
   <footer class="post-footer">
     <ul class="post-tags">
       <li><a href="http://localhost:1313/tags/blog/">Blog</a></li>
-      <li><a href="http://localhost:1313/tags/reinforcement-learning/">Reinforcement Learning</a></li>
+      <li><a href="http://localhost:1313/tags/reinforcement-learning/">Reinforcement-Learning</a></li>
       <li><a href="http://localhost:1313/tags/policy-gradient/">Policy-Gradient</a></li>
     </ul>
   </footer>

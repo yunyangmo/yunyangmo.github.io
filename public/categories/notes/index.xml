@@ -6,8 +6,15 @@
     <description>Recent content in Notes on Yunyang Mo</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 21 Jun 2026 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 24 Aug 2026 00:00:00 +0000</lastBuildDate>
     <atom:link href="http://localhost:1313/categories/notes/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>A Policy Step Too Far</title>
+      <link>http://localhost:1313/posts/policy_gradient/</link>
+      <pubDate>Mon, 24 Aug 2026 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/posts/policy_gradient/</guid>
+      <description>How an agent turns experience into better behavior—from policy improvement to PPO, and the estimation, approximation, and trust behind each update.</description>
+    </item>
     <item>
       <title>Hello World</title>
       <link>http://localhost:1313/posts/hello-world/</link>
