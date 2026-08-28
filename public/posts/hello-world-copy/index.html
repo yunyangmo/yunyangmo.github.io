@@ -5,11 +5,14 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="robots" content="noindex, nofollow">
-<title>404 Page not found | Yunyang Mo</title>
-<meta name="keywords" content="">
-<meta name="description" content="">
+<title>Hello World | Yunyang Mo</title>
+<meta name="keywords" content="blog">
+<meta name="description" content="This is my first post.
+Why this blog
+Life is full of small thoughts, failed attempts, half-clear intuitions, and occasional moments where something finally makes sense. Many of them are too rough to become papers, but too useful to disappear.
+Writing things down might be a way for release.">
 <meta name="author" content="">
-<link rel="canonical" href="http://localhost:1313/404.html">
+<link rel="canonical" href="http://localhost:1313/posts/hello-world-copy/">
 <link crossorigin="anonymous" href="/assets/css/stylesheet.d5d6be065466747c83a24f9127d73dcacb9c92e392e8254aab08ffd604adaa4e.css" integrity="sha256-1da&#43;BlRmdHyDok&#43;RJ9c9ysuckuOS6CVKqwj/1gStqk4=" rel="preload stylesheet" as="style">
 <link rel="icon" href="http://localhost:1313/favicon.ico">
 <link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
@@ -18,7 +21,7 @@
 <link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
-<link rel="alternate" hreflang="en" href="http://localhost:1313/404.html">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/posts/hello-world-copy/">
 <noscript>
     <style>
         #theme-toggle,
@@ -50,7 +53,7 @@ window.MathJax = {
 
 
 </head>
-<body class="list" id="top">
+<body id="top">
     <header class="header">
     <nav class="header-nav">
         <div class="logo">
@@ -108,7 +111,56 @@ window.MathJax = {
     </nav>
 </header>
 <main class="main">
-<div class="not-found">404</div>
+
+<article class="post-single">
+  <header class="post-header">
+    <nav class="breadcrumbs" role="navigation" aria-label="Breadcrumb">
+            <a href="/">Home</a>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
+                <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+            <a href="/posts/">Posts</a>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
+        <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+</nav>
+    <h1 class="post-title entry-hint-parent">
+      Hello World
+    </h1>
+    <div class="post-meta">
+
+<span title='2026-06-21 00:00:00 +0000 UTC'>June 21, 2026</span>&nbsp;·&nbsp;<span>1 min</span>
+
+</div>
+  </header> <details class="toc" >
+    <summary accesskey="c" title="(Alt + C)">
+        <span class="title">Table of Contents</span>
+    </summary>
+
+    <div class="inner"><ul>
+            <li>
+                <a href="#why-this-blog" aria-label="Why this blog">Why this blog</a>
+            </li>
+        </ul>
+    </div>
+</details>
+
+  <div class="post-content md-content"><p>This is my first post.</p>
+<h2 id="why-this-blog">Why this blog<a hidden class="anchor" aria-hidden="true" href="#why-this-blog">#</a></h2>
+<p>Life is full of small thoughts, failed attempts, half-clear intuitions, and occasional moments where something finally makes sense. Many of them are too rough to become papers, but too useful to disappear.</p>
+<p>Writing things down might be a way for release.</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/blog/">Blog</a></li>
+    </ul>
+  </footer>
+</article>
     </main>
     
 <footer class="footer">
@@ -188,6 +240,53 @@ window.MathJax = {
         }
     })
 
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
 </script>
 </body>
 

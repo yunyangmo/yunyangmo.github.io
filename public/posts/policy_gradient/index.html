@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="light">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="noindex, nofollow">
+<title>A Policy Step Too Far | Yunyang Mo</title>
+<meta name="keywords" content="blog, reinforcement-learning, policy-gradient">
+<meta name="description" content="How an agent turns experience into better behavior—from policy improvement to PPO, and the estimation, approximation, and trust behind each update.">
+<meta name="author" content="">
+<link rel="canonical" href="http://localhost:1313/posts/policy_gradient/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.d5d6be065466747c83a24f9127d73dcacb9c92e392e8254aab08ffd604adaa4e.css" integrity="sha256-1da&#43;BlRmdHyDok&#43;RJ9c9ysuckuOS6CVKqwj/1gStqk4=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/posts/policy_gradient/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    }
+
+</script>
+<script>
+window.MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']],
+    displayMath: [['$$', '$$'], ['\\[', '\\]']],
+    processEscapes: true
+  },
+  svg: {
+    fontCache: 'global'
+  }
+};
+</script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js"></script>
+
+
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="header-nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Yunyang Mo (Alt + H)">Yunyang Mo</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" class="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg class="moon" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg class="sun" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu" class="menu">
+            <li>
+                <a href="http://localhost:1313/posts/" title="Posts">
+                    <span>Posts</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/notes/" title="Notes">
+                    <span>Notes</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/archives/" title="Archive">
+                    <span>Archive</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <nav class="breadcrumbs" role="navigation" aria-label="Breadcrumb">
+            <a href="/">Home</a>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
+                <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+            <a href="/posts/">Posts</a>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
+        <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+</nav>
+    <h1 class="post-title entry-hint-parent">
+      A Policy Step Too Far
+      <span class="entry-hint" title="Draft">
+        <svg xmlns="http://www.w3.org/2000/svg" height="35" viewBox="0 -960 960 960" fill="currentColor">
+          <path
+            d="M160-410v-60h300v60H160Zm0-165v-60h470v60H160Zm0-165v-60h470v60H160Zm360 580v-123l221-220q9-9 20-13t22-4q12 0 23 4.5t20 13.5l37 37q9 9 13 20t4 22q0 11-4.5 22.5T862.09-380L643-160H520Zm300-263-37-37 37 37ZM580-220h38l121-122-18-19-19-18-122 121v38Zm141-141-19-18 37 37-18-19Z" />
+        </svg>
+      </span>
+    </h1>
+    <div class="post-description">
+      How an agent turns experience into better behavior—from policy improvement to PPO, and the estimation, approximation, and trust behind each update.
+    </div>
+    <div class="post-meta">
+
+<span title='2026-08-24 00:00:00 +0000 UTC'>August 24, 2026</span>&nbsp;·&nbsp;<span>16 min</span>
+
+</div>
+  </header> <details class="toc" >
+    <summary accesskey="c" title="(Alt + C)">
+        <span class="title">Table of Contents</span>
+    </summary>
+
+    <div class="inner"><ul>
+            <li>
+                <a href="#the-policy-changes-its-own-data" aria-label="The Policy Changes Its Own Data">The Policy Changes Its Own Data</a></li>
+            <li>
+                <a href="#what-makes-one-policy-better-than-another" aria-label="What Makes One Policy Better Than Another?">What Makes One Policy Better Than Another?</a></li>
+            <li>
+                <a href="#which-way-should-the-policy-move" aria-label="Which Way Should the Policy Move?">Which Way Should the Policy Move?</a></li>
+            <li>
+                <a href="#when-a-good-direction-becomes-a-bad-update" aria-label="When a Good Direction Becomes a Bad Update">When a Good Direction Becomes a Bad Update</a></li>
+            <li>
+                <a href="#how-far-we-can-trust-the-update" aria-label="How far we can trust the update">How far we can trust the update</a></li>
+            <li>
+                <a href="#ppo-as-a-design-decision" aria-label="PPO as a Design Decision">PPO as a Design Decision</a></li>
+            <li>
+                <a href="#think-beyond-ppo" aria-label="Think Beyond PPO">Think Beyond PPO</a></li>
+            <li>
+                <a href="#references" aria-label="References">References</a>
+            </li>
+        </ul>
+    </div>
+</details>
+
+  <div class="post-content md-content"><p>How does an agent learn a behavior when no one can tell it the correct action at every state? This question is especially important in on-policy RL, where we do not first obtain an action-value function that reliably covers the entire state–action space and then derive the “optimal” action from it. Instead, we specify what counts as a good outcome, let the current policy interact with the environment, and use the resulting experience to make better behavior more likely.</p>
+<h2 id="the-policy-changes-its-own-data">The Policy Changes Its Own Data<a hidden class="anchor" aria-hidden="true" href="#the-policy-changes-its-own-data">#</a></h2>
+<p>A different policy does not merely make different decisions; it also generates different experience. In supervised learning, updating a model changes its predictions while leaving the training data unchanged. In reinforcement learning, however, the policy helps generate its own data. Its actions affect the next states, those states affect the decisions that follow, and together they determine the trajectories from which the policy learns.</p>
+<p>At iteration (k), the process can be written schematically as</p>
+<p>$$
+\pi^{(k)}
+\longrightarrow
+\mathcal{D}^{(k)} \sim p(\tau \mid \pi^{(k)})
+\longrightarrow
+\pi^{(k+1)}.
+$$</p>
+<p>The dataset ($\mathcal{D}_k$) is not an independent sample of everything the agent might experience. It reflects the <strong>states visited</strong> and <strong>actions chosen</strong> by ($\pi_k$). Once the policy is updated, ($\pi _ {k+1}$) may generate a different trajectory distribution—and therefore a different learning problem.</p>
+<p><strong>why previous collected data is not eligible?</strong>
+Value estimation propagates the consequences of a trajectory backward: rewards observed later are discounted when they are assigned to earlier states and actions. Because our experience does not cover the entire state–action space, we cannot directly know the optimal action at every state. We can only compare actions using the data we have collected.</p>
+<p>Ideally, the data used to estimate a policy’s value would all come from that same fixed policy—not necessarily the optimal policy, but the policy we are evaluating. When both the environment and the policy are fixed, the induced trajectory distribution is fixed, and the return has a stable interpretation. Using the notation in <a href="https://proceedings.mlr.press/v37/schulman15.html">TRPO</a> [3], the state–action value is</p>
+<p>$$
+Q^\pi(s_t,a_t)=
+\mathbb{E} _ {s _ {t+1},a_{t+1},\ldots\sim\pi}
+\left[
+\sum_{\ell=0}^{\infty}
+\gamma^\ell r_{t+\ell}
+\right].
+$$</p>
+<p>The superscript ($\pi$) matters: after taking ($a_t$), the subsequent actions contributing to this return are still generated by ($\pi$).</p>
+<p>But the policy being trained is not fixed. As it learns and updates, its future actions change, along with the states it visits and the outcomes that follow an earlier decision. The recorded return of an old trajectory does not itself change, but it estimates ($Q^{\pi_{\mathrm{old}}}$), not ($Q^{\pi_{\mathrm{current}}}$). Consequently, an action ranking inferred from old data may no longer be trustworthy for the current policy, especially when we retain trajectories collected during much earlier stages of training.</p>
+<p>Consider a robot learning to grasp a cup at different stages of training. Under the current policy, action ($a_1$) may be better than ($a_2$) because it moves the gripper into a state from which the robot can complete a stable grasp. Under an early policy, however, the same ($a_1$) may be followed by poor corrective actions and end with the cup being knocked over. Those early trajectories therefore assign ($a_1$) a low return. If we treat that return as an estimate of its value under the current policy, ($a_1$) may be rejected even though it has now become the better action. The environment has not changed; the policy that acts after ($a_1$) has.</p>
+<figure>
+  <img src="/on_policy.jpg" alt="Two nearby later-stage trajectories lead to stable and unstable grasps, while an early-training trajectory knocks over the cup.">
+  <figcaption>An action can receive a poor return under an early policy because of what that policy does next, even when the same action becomes useful under the current policy.</figcaption>
+</figure>
+<p>This is why on-policy methods refresh their experience—and why, when a batch is reused, the next question is how far the policy can move before that batch stops being a reliable basis for improvement.</p>
+<h2 id="what-makes-one-policy-better-than-another">What Makes One Policy Better Than Another?<a hidden class="anchor" aria-hidden="true" href="#what-makes-one-policy-better-than-another">#</a></h2>
+<p>Policy improvement turns the idea of “better behavior” into a precise comparison. Starting from a current policy ($\pi$), we want to construct another policy ($\pi&rsquo;$) with a higher expected return:</p>
+<p>$$
+J(\pi&rsquo;) &gt; J(\pi).
+$$</p>
+<p>The inequality tells us how to recognize a better policy, but not how to identify one using data generated by a different policy (like the current policy). To reason about that change in advance, we need a reference provided by the policy we already understand.</p>
+<p>For the current policy ($\pi$), ($V^\pi(s)$) describes the expected return from state ($s$), while ($Q^\pi(s,a)$) describes the expected return after taking ($a$) and then continuing with ($\pi$). Their difference is the advantage:</p>
+<p>$$
+A^\pi(s,a)=
+Q^\pi(s,a)-V^\pi(s).
+$$</p>
+<p>A positive advantage does not mean that an action is universally good. It means that taking the action once and then following ($\pi$) is better than the behavior that ($\pi$) produces on average from the same state. In a fully known tabular problem, knowing these comparisons everywhere would allow us to improve the policy directly.</p>
+<p>More generally, the exact relationship between two policies is given by the performance-difference lemma [1]:</p>
+<p>$$
+J(\pi&rsquo;)-J(\pi)=
+\frac{1}{1-\gamma}
+\mathbb{E}_{s\sim d _ {\pi&rsquo;},a\sim\pi&rsquo;(\cdot\mid s)}
+\left[
+A^\pi(s,a)
+\right],
+$$</p>
+<p>where ($d_{\pi&rsquo;}$) is the normalized discounted state-visitation distribution induced by ($\pi&rsquo;$).
+The exact identity is not yet usable with the data we have. Its state distribution $d _ {\pi&rsquo;}$ describes the states that the candidate policy will visit, but those states are unavailable until we actually run $\pi&rsquo;$. We therefore make the central local approximation: keep the current policy’s advantage function, but evaluate the candidate policy at states visited by the current policy. Replacing $d _ {\pi&rsquo;}$ with $d _ \pi$ gives the surrogate</p>
+<p>$$
+L _ \pi(\pi&rsquo;)=
+J(\pi)+
+\frac{1}{1-\gamma}
+\mathbb{E} _ {s\sim d _ \pi,,a\sim\pi&rsquo;(\cdot\mid s)}
+\bigl[
+A^\pi(s,a)
+\bigr].
+$$</p>
+<p>This removes the need to sample states from $\pi&rsquo;$, but it is not yet a finite-batch estimator: the actions in the batch were sampled from $\pi$, and $A^\pi$ is still unknown. The next step is to express both quantities using the data collected under the current policy.</p>
+<p>The actions in the batch were also sampled from ($\pi$), but their distribution can be reweighted using a probability ratio:</p>
+<p>$$
+\mathbb{E} _ {s\sim d_\pi,a\sim\pi}
+\left[
+\frac{\pi&rsquo;(a\mid s)}
+{\pi(a\mid s)}
+A^\pi(s,a)
+\right].
+$$</p>
+<p>Given a batch
+$$
+\mathcal{D} _ \pi=
+{(s_t,a_t,\widehat{A} _ t)} _ {t=1}^{N}.
+$$</p>
+<p>where $\widehat{A}$ is the estimate advantage, the part of the surrogate relevant for optimization can therefore be estimated as</p>
+<p>$$
+\frac{1}{N}
+\sum_{t=1}^{N}
+\frac{\pi&rsquo;(a _ t\mid s_t)}
+{\pi(a_t\mid s_t)}
+\widehat{A} _ t.
+$$</p>
+<p>This estimator is computable from current-policy data. The probability ratio adjusts how the candidate policy weights the sampled actions, but it does not change the sampled states from ($d_\pi$) into states from ($d_{\pi&rsquo;}$). The surrogate is therefore <strong>reliable near the current policy</strong>, where the two state distributions remain similar, but can become misleading after a large update. The next question is how to optimize this objective without moving the policy beyond the region in which the approximation can be trusted.</p>
+<h2 id="which-way-should-the-policy-move">Which Way Should the Policy Move?<a hidden class="anchor" aria-hidden="true" href="#which-way-should-the-policy-move">#</a></h2>
+<p>In tabular policy improvement, this question can be answered one state at a time. If $Q^\pi(s,a)$ is known for every action, we can inspect the corresponding row of the policy table and choose $a^*(s)=\arg\max_a Q^\pi(s,a)$.</p>
+<p>For a stochastic policy, the same idea means assigning more probability to actions with positive advantage and less to actions with negative advantage. Because every state has its own row in the table, changing the decision at one state does not have to change the decisions at other states.</p>
+<p>A neural policy does not have this independence. The same parameter vector $\theta$ determines the action distribution $\pi_\theta(a\mid s)$ at every state. Changing $\theta$ to favor an action at one state may also change the policy’s behavior at many other states. We therefore need a single direction in parameter space that combines the improvement signals from all samples in the batch.</p>
+<p>Let the current policy be $\pi_{\theta_k}$, and let $\pi_\theta$ represent a candidate policy. The sample-based objective from the previous section becomes</p>
+<p>$$
+\widehat{L} _ k(\theta)=
+\frac{1}{N}
+\sum_{t=1}^{N}
+\frac{\pi_\theta(a_t\mid s_t)}
+{\pi_{\theta_k}(a_t\mid s_t)}
+\widehat{A} _ t.
+$$</p>
+<p>At the beginning of the update, $\theta=\theta_k$, so the candidate and the data-generating policy are identical. Because the policy is differentiable, we can ask which small change in $\theta$ would increase this objective most quickly. Evaluating its gradient at the current parameters gives</p>
+<p>$$
+\widehat{g} _ k=
+\frac{1}{N}
+\sum_{t=1}^{N}
+\widehat{A} _ t
+\nabla_\theta
+\log \pi_\theta(a_t\mid s_t)
+\quad
+\text{at }\theta=\theta_k.
+$$</p>
+<p>At this point, the probability ratio equals one, and its derivative becomes the gradient of the log probability. Each sample then contributes a simple signal: a positive $\widehat{A}_t$ pushes toward increasing the probability of the sampled action, while a negative $\widehat{A}_t$ pushes in the opposite direction. For a detailed derivation of why this likelihood-ratio form yields a gradient that can be estimated from experience, see <a href="https://papers.nips.cc/paper_files/paper/1999/hash/464d828b85b0bed98e80ade0a5c43b0f-Abstract.html">Sutton et al</a> [2].</p>
+<p>A basic gradient-ascent step produces the candidate policy:</p>
+<p>$$
+\theta _ {k+1}=
+\theta_k+\alpha\widehat{g} _ k,
+\qquad
+\pi&rsquo;=
+\pi _ {\theta_{k+1}}.
+$$</p>
+<p>At the current policy, the surrogate and the true performance objective agree to first order, so the gradient gives a locally valid direction. But the gradient only describes the objective at the point where the data and policy still match. Once the optimizer takes a finite step, that match begins to break, and the objective becomes a less reliable guide to actual policy improvement.</p>
+<h2 id="when-a-good-direction-becomes-a-bad-update">When a Good Direction Becomes a Bad Update<a hidden class="anchor" aria-hidden="true" href="#when-a-good-direction-becomes-a-bad-update">#</a></h2>
+<p>The distinction between a direction and an update matters. A gradient is a first-order statement about what happens near the current parameters. Like a first-order Taylor approximation, it replaces the objective’s curved surface with a tangent plane around $\theta_k$:</p>
+<p>$$
+J(\theta_k+\Delta\theta)=
+J(\theta_k)+
+\nabla_\theta J(\theta_k)^\top\Delta\theta+
+\mathcal{O}(\lVert\Delta\theta\rVert^2).
+$$</p>
+<p>Close to $\theta_k$, the tangent plane follows the actual objective well. Farther away, the curvature hidden in the higher-order terms becomes increasingly important. Moving along the gradient makes the first-order term positive, so a sufficiently small step provides a useful prediction of improvement. A practical optimizer, however, takes a finite step and often takes several of them on the same batch. As the policy moves farther from $\pi_{\theta_k}$, the terms ignored by this local approximation become harder to dismiss.</p>
+<figure style="width: 100%; max-width: 680px; margin: 1.5rem auto; text-align: center;">
+  <img src="/taylor_policy_update.png"
+       alt="The policy gradient is locally accurate, but its first-order prediction becomes unreliable after a large update."
+       style="display: block; width: 100%; height: auto;">
+  <figcaption>
+    The gradient defines a local direction at the current policy. A small step follows the true objective closely, while a large step may continue to look beneficial under the first-order approximation even after the actual return has decreased.
+  </figcaption>
+</figure>
+<p>In policy optimization, the local approximation is also tied to the policy that generated the data.</p>
+<p>A good direction becomes a bad update when the candidate policy moves far enough that the old batch no longer represents its behavior. Large or repeated steps may continue to increase $\widehat{L}_k(\theta)$ on the same samples, while the state distribution shifts and repeated use of noisy $\widehat{A}_t$ magnifies estimation error. The optimizer may still be improving the empirical objective even after that objective has stopped tracking the true return.</p>
+<p>The issue is therefore not whether the gradient was correct at $\theta_k$, but how far the policy can move before its local approximation and supporting data become unreliable.</p>
+<h2 id="how-far-we-can-trust-the-update">How far we can trust the update<a hidden class="anchor" aria-hidden="true" href="#how-far-we-can-trust-the-update">#</a></h2>
+<p>A natural answer is to limit the parameter change $\lVert\theta-\theta_k\rVert$. But parameter distance is a poor measure of behavioral change. The same parameter step can barely affect the policy in some states while sharply changing its action probabilities in others. What matters is not how far the parameters move, but <strong>how differently the new policy behaves</strong>.</p>
+<p>For a stochastic policy, this change can be measured by the KL divergence between its old and new action distributions:</p>
+<p>$$
+D_{\mathrm{KL}}
+\left(
+\pi_{\theta_k}(\cdot\mid s)
+,\Vert,
+\pi_\theta(\cdot\mid s)
+\right).
+$$</p>
+<p>A small KL divergence means that, at state $s$, the candidate policy still assigns similar probabilities to actions as the policy that generated the data. TRPO [3] turns this idea into an explicit constraint:</p>
+<p>$$
+\max_\theta \widehat{L} _ k(\theta)
+\qquad
+\text{subject to}
+\qquad
+\mathbb{E} _ {s\sim d_{\pi_{\theta_k}}}
+\left[
+D_{\mathrm{KL}}
+\left(
+\pi_{\theta_k}(\cdot\mid s)
+,\Vert,
+\pi_\theta(\cdot\mid s)
+\right)
+\right]
+\leq \delta.
+$$</p>
+<p>The objective asks the policy to improve according to the current batch; the constraint limits how much its behavior may change while doing so. The reasoning behind this constraint can be summarized as</p>
+<p>$$
+\text{penalty for policy change}.
+$$</p>
+<p>In the theoretical argument, this penalty depends on the largest KL divergence across states. Practical TRPO instead constrains the average KL divergence over states visited by the old policy, because a worst-case change cannot be measured reliably from a finite batch. This replacement is itself an approximation.</p>
+<p>The trust region therefore does not make old data perfectly valid for the new policy. It limits how far the optimizer is allowed to extrapolate from that data. TRPO provides a principled way to impose this limit, but doing so requires a constrained, second-order optimization procedure and a line search. PPO keeps the same concern while asking whether proximity can be encouraged through a simpler modification of the objective itself.</p>
+<h2 id="ppo-as-a-design-decision">PPO as a Design Decision<a hidden class="anchor" aria-hidden="true" href="#ppo-as-a-design-decision">#</a></h2>
+<p>PPO is not an inevitable consequence of policy improvement. It is one practical answer to the problem left by TRPO: how can we reuse an on-policy batch for several first-order updates without allowing the policy to move too far from the behavior that generated it?</p>
+<p>The probability ratio introduced earlier provides a direct way to observe this movement:</p>
+<p>$$
+r_t(\theta)=
+\frac{\pi_\theta(a_t\mid s_t)}
+{\pi_{\theta_k}(a_t\mid s_t)}.
+$$</p>
+<p>At the beginning of optimization, $\theta=\theta_k$ and every ratio is one. If $\widehat{A}_t&gt;0$, increasing $r_t(\theta)$ makes the sampled action more likely. If $\widehat{A}_t&lt;0$, decreasing the ratio makes it less likely. The unclipped objective continues to reward these changes regardless of how far the ratio has already moved.</p>
+<p><a href="https://arxiv.org/abs/1707.06347">PPO</a> [4] changes the shape of this objective:</p>
+<p>$$
+\widehat{L}^{\mathrm{CLIP}}_k(\theta)=
+\frac{1}{N}
+\sum _ {t=1}^{N}
+\min
+\left(
+r _ t(\theta)\widehat{A} _ t,,
+\operatorname{clip}
+\left(
+r _ t(\theta),
+1-\epsilon,
+1+\epsilon
+\right)
+\widehat{A} _ t
+\right).
+$$</p>
+<p>For a positive advantage, the objective stops providing additional benefit once the action probability has increased beyond $1+\epsilon$. For a negative advantage, the benefit stops once the probability has decreased below $1-\epsilon$. The minimum selects the more conservative contribution, making the clipped term a pessimistic version of the original sample objective—not a lower bound on the policy’s true return.</p>
+<p>This distinction matters: clipping does not force every ratio to remain inside $[1-\epsilon,1+\epsilon]$. It only removes the incentive from a particular sample to move farther in the direction suggested by its advantage. Other samples controlled by the same network can still push that ratio outside the interval.</p>
+<p>Clipping is also inactive at the start of each iteration because all ratios initially equal one. Its role appears after several minibatch updates, when the optimized policy begins to depart from $\pi_{\theta_k}$. This is what allows PPO to perform multiple optimization epochs on one batch while gradually reducing the benefit of increasingly aggressive changes.</p>
+<p>What clipping does not do is refresh the states in the batch or recompute their advantages under the new policy. It controls changes in the probabilities of sampled actions at sampled states; it does not directly control the unseen trajectory distribution that those changes may produce.</p>
+<p>PPO therefore replaces TRPO’s explicit distribution-level constraint with a per-sample modification of the objective. The trade-off is deliberate: simpler first-order optimization and greater data reuse in exchange for a weaker notion of proximity and no guarantee that the resulting update remains inside a true trust region. Seen this way, PPO is not the final form of policy optimization, but one choice about where and how to be conservative.</p>
+<h2 id="think-beyond-ppo">Think Beyond PPO<a hidden class="anchor" aria-hidden="true" href="#think-beyond-ppo">#</a></h2>
+<p>Thinking beyond PPO does not begin by asking how to invent another clipping function. It begins by asking which approximation in the current update no longer matches the problem.</p>
+<p>A policy-gradient update can be viewed schematically as</p>
+<p>$$
+\widehat{g}
+\approx
+\frac{1}{N}
+\sum _ {t=1}^{N}
+c _ t(\theta)\widehat{A} _ t
+\nabla _ \theta
+\log\pi _ \theta(a _ t\mid s _ t).
+$$</p>
+<p>Here, $\widehat{A} _ t$ determines what behavior should be reinforced, while $c _ t(\theta)$ describes how the evidence is corrected and how strongly it may change the policy. Recent algorithms can appear similar to PPO while changing either of these choices.</p>
+<p><strong>Change how improvement is estimated.</strong> <a href="https://arxiv.org/abs/2402.03300">GRPO</a> [5] removes the learned value function and compares several trajectories generated from the same initial condition:</p>
+<p>$$
+\widehat{A} _ i=
+\frac{
+R _ i-\frac{1}{G}\sum _ {j=1}^{G}R _ j
+}{
+\operatorname{std}(R _ 1,\ldots,R _ G)
+}.
+$$</p>
+<p>In language-model training, these trajectories are responses generated for the same prompt. A response with above-average reward receives a positive advantage, while one with below-average reward receives a negative advantage.</p>
+<p>GRPO otherwise retains the PPO-style probability ratio and clipping objective. Its main decision is therefore not to change how far the policy may move, but to change the reference used to decide which trajectories are better. This removes the critic, but it also makes the learning signal depend on the other trajectories sampled in the same group.</p>
+<p><strong>Change the unit at which policy mismatch is measured.</strong> In an autoregressive policy, each token is an action, its preceding prefix is the state, and the complete response is a trajectory. GRPO applies PPO-style clipping to the probability ratio of each individual token. <a href="https://arxiv.org/abs/2507.18071">GSPO</a> [6] instead defines one length-normalized ratio for the complete response:</p>
+<p>$$
+s _ i(\theta)=
+\bigg(
+\frac{
+\pi _ \theta(y _ i\mid x)
+}{
+\pi _ {\theta _ k}(y _ i\mid x)
+}
+\bigg)^{\frac{1}{|y _ i|}}.
+$$</p>
+<p>This ratio is the geometric mean of the probability changes along the response. GSPO applies clipping and optimization at this sequence level rather than deciding separately whether each token has moved too far.</p>
+<p>The change is subtle but important. If reward evaluates the complete trajectory, token-level clipping may treat the decisions within that trajectory as unrelated updates. Sequence-level clipping instead asks whether the behavior that produced the complete outcome has collectively moved away from the policy that generated the data.</p>
+<p>The length normalization keeps the ratio numerically manageable, but it also means that $s _ i(\theta)$ is not the exact importance ratio between the two trajectory distributions. GSPO therefore does not eliminate approximation. It chooses a different one: greater alignment between the reward and update granularity in exchange for an inexact distribution correction.</p>
+<p>GRPO and GSPO illustrate two distinct places where a new policy objective can intervene. GRPO changes the improvement signal while largely preserving PPO’s update mechanism. GSPO retains the group-relative signal but changes what counts as a policy change.</p>
+<p>Future progress may therefore come not from a universally better clipping rule, but from objectives that make their assumptions about data, credit, and policy movement explicit. The central question remains the one that began this post: <strong>how can an agent learn better behavior from experience without pushing its policy a step too far?</strong></p>
+<hr>
+<h2 id="references">References<a hidden class="anchor" aria-hidden="true" href="#references">#</a></h2>
+<p>[1] Sham Kakade and John Langford. <a href="https://api.semanticscholar.org/CorpusID:9046608"><em>Approximately Optimal Reinforcement Learning</em></a>. ICML, 2002.</p>
+<p>[2] Richard S. Sutton, David McAllester, Satinder Singh, and Yishay Mansour. <a href="https://papers.nips.cc/paper_files/paper/1999/hash/464d828b85b0bed98e80ade0a5c43b0f-Abstract.html"><em>Policy Gradient Methods for Reinforcement Learning with Function Approximation</em></a>. NeurIPS, 1999.</p>
+<p>[3] John Schulman, Sergey Levine, Pieter Abbeel, Michael Jordan, and Philipp Moritz. <a href="https://proceedings.mlr.press/v37/schulman15.html"><em>Trust Region Policy Optimization</em></a>. ICML, 2015.</p>
+<p>[4] John Schulman, Filip Wolski, Prafulla Dhariwal, Alec Radford, and Oleg Klimov. <a href="https://arxiv.org/abs/1707.06347"><em>Proximal Policy Optimization Algorithms</em></a>. arXiv, 2017.</p>
+<p>[5] Zhihong Shao, Peiyi Wang, Qihao Zhu, Runxin Xu, Junxian Song, Mingchuan Zhang, Y.K. Li, Y. Wu, and Daya Guo. <a href="https://arxiv.org/abs/2402.03300"><em>DeepSeekMath: Pushing the Limits of Mathematical Reasoning in Open Language Models</em></a>. arXiv, 2024.</p>
+<p>[6] <a href="https://arxiv.org/abs/2507.18071"><em>Group Sequence Policy Optimization</em></a>. arXiv, 2025.</p>
+<!-- https://applause.chabouis.fr/get-claps?url=your-URL -->
+
+  </div>
+
+
+<link rel="stylesheet" href="https://unpkg.com/applause-button/dist/applause-button.css">
+<script defer src="https://unpkg.com/applause-button/dist/applause-button.js"></script>
+
+<style>
+   
+  .applause-wrapper {
+    clear: both !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin-top: 60px !important;
+    margin-bottom: 140px !important;  
+    padding: 10px 0 !important;
+    box-sizing: border-box !important;
+  }
+
+   
+  .applause-wrapper applause-button {
+    display: inline-block !important;
+    width: 60px !important;
+    height: 60px !important;
+    margin: 0 auto !important;
+    flex-shrink: 0 !important;
+  }
+
+   
+  .applause-wrapper applause-button .hands-flat path:first-child,
+  .applause-wrapper applause-button .hands-outline path {
+    d: path("M30 48.35 l-2.9-2.64 C16.8 36.37 10 30.21 10 22.65 C10 16.49 14.84 11.65 21 11.65 c3.48 0 6.82 1.62 9 4.18 C32.18 13.27 35.52 11.65 39 11.65 C45.16 11.65 50 16.49 50 22.65 c0 7.56-6.8 13.72-17.1 23.08 L30 48.35z") !important;
+    fill: #e63946 !important;
+  }
+
+   
+  .applause-wrapper applause-button .hands-flat path:not(:first-child) {
+    display: none !important;
+  }
+
+   
+  .applause-prompt {
+    font-size: 1.5rem !important;
+    color: var(--secondary, #7c7c7c) !important;
+    margin-top: 60px !important;    
+    margin-bottom: 0 !important;
+    font-style: italic !important;
+    letter-spacing: 0.3px !important;
+    text-align: center !important;
+  }
+</style>
+
+<div class="applause-wrapper">
+  <applause-button
+    api="https://applause.chabouis.fr"
+    url="http://localhost:1313/posts/policy_gradient/"
+    color="red"
+    multiclap="false"
+    max-claps="1">
+  </applause-button>
+  <p class="applause-prompt">Press like if you found it useful!</p>
+</div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/blog/">Blog</a></li>
+      <li><a href="http://localhost:1313/tags/reinforcement-learning/">Reinforcement Learning</a></li>
+      <li><a href="http://localhost:1313/tags/policy-gradient/">Policy-Gradient</a></li>
+    </ul>
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2026 <a href="http://localhost:1313/">Yunyang Mo</a></span> · 
+
+    
+    
+    <span>
+        Powered by
+        <a href="https://gohugo.io/?utm_source=papermod" rel="noopener" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" id="top-link" class="top-link hidden" aria-label="go to top" title="Go to Top (Alt + G)" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevrons-up">
+        <polyline points="17 11 12 6 7 11"></polyline>
+        <polyline points="17 18 12 13 7 18"></polyline>
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var toplink = document.getElementById("top-link");
+    window.onscroll = function () {
+        const scrollThreshold = window.innerHeight;
+        if (document.body.scrollTop > scrollThreshold || document.documentElement.scrollTop > scrollThreshold) {
+            toplink.classList.remove("hidden");
+        } else {
+            toplink.classList.add("hidden");
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

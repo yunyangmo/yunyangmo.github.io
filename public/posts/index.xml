@@ -2,17 +2,24 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Posts on Yunyang Mo</title>
-    <link>http://localhost:40729/posts/</link>
+    <link>http://localhost:1313/posts/</link>
     <description>Recent content in Posts on Yunyang Mo</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 21 Jun 2026 00:00:00 +0000</lastBuildDate>
-    <atom:link href="http://localhost:40729/posts/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 24 Aug 2026 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://localhost:1313/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>A Policy Step Too Far</title>
+      <link>http://localhost:1313/posts/policy_gradient/</link>
+      <pubDate>Mon, 24 Aug 2026 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/posts/policy_gradient/</guid>
+      <description>How an agent turns experience into better behavior—from policy improvement to PPO, and the estimation, approximation, and trust behind each update.</description>
+    </item>
     <item>
       <title>Hello World</title>
-      <link>http://localhost:40729/posts/hello-world/</link>
+      <link>http://localhost:1313/posts/hello-world/</link>
       <pubDate>Sun, 21 Jun 2026 00:00:00 +0000</pubDate>
-      <guid>http://localhost:40729/posts/hello-world/</guid>
+      <guid>http://localhost:1313/posts/hello-world/</guid>
       <description>&lt;p&gt;This is my first post.&lt;/p&gt;
 &lt;h2 id=&#34;why-this-blog&#34;&gt;Why this blog&lt;/h2&gt;
 &lt;p&gt;Life is full of small thoughts, failed attempts, half-clear intuitions, and occasional moments where something finally makes sense. Many of them are too rough to become papers, but too useful to disappear.&lt;/p&gt;

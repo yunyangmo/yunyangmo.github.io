@@ -4,6 +4,7 @@ date: 2026-06-21
 draft: false
 tags: ["blog"]
 categories: ["notes"]
+hideLike: true
 ---
 
 This is my first post.

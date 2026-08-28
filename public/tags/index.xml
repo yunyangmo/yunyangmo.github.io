@@ -2,66 +2,73 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Tags on Yunyang Mo</title>
-    <link>http://localhost:40729/tags/</link>
+    <link>http://localhost:1313/tags/</link>
     <description>Recent content in Tags on Yunyang Mo</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 28 Jun 2026 00:00:00 +0000</lastBuildDate>
-    <atom:link href="http://localhost:40729/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 24 Aug 2026 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://localhost:1313/tags/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Bellman Optimality</title>
-      <link>http://localhost:40729/tags/bellman-optimality/</link>
-      <pubDate>Sun, 28 Jun 2026 00:00:00 +0000</pubDate>
-      <guid>http://localhost:40729/tags/bellman-optimality/</guid>
+      <title>Blog</title>
+      <link>http://localhost:1313/tags/blog/</link>
+      <pubDate>Mon, 24 Aug 2026 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/tags/blog/</guid>
       <description></description>
     </item>
     <item>
-      <title>Policy Iteration</title>
-      <link>http://localhost:40729/tags/policy-iteration/</link>
-      <pubDate>Sun, 28 Jun 2026 00:00:00 +0000</pubDate>
-      <guid>http://localhost:40729/tags/policy-iteration/</guid>
+      <title>Policy-Gradient</title>
+      <link>http://localhost:1313/tags/policy-gradient/</link>
+      <pubDate>Mon, 24 Aug 2026 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/tags/policy-gradient/</guid>
       <description></description>
     </item>
     <item>
       <title>Reinforcement Learning</title>
-      <link>http://localhost:40729/tags/reinforcement-learning/</link>
+      <link>http://localhost:1313/tags/reinforcement-learning/</link>
+      <pubDate>Mon, 24 Aug 2026 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/tags/reinforcement-learning/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Bellman Optimality</title>
+      <link>http://localhost:1313/tags/bellman-optimality/</link>
       <pubDate>Sun, 28 Jun 2026 00:00:00 +0000</pubDate>
-      <guid>http://localhost:40729/tags/reinforcement-learning/</guid>
+      <guid>http://localhost:1313/tags/bellman-optimality/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Policy Iteration</title>
+      <link>http://localhost:1313/tags/policy-iteration/</link>
+      <pubDate>Sun, 28 Jun 2026 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/tags/policy-iteration/</guid>
       <description></description>
     </item>
     <item>
       <title>Value Iteration</title>
-      <link>http://localhost:40729/tags/value-iteration/</link>
+      <link>http://localhost:1313/tags/value-iteration/</link>
       <pubDate>Sun, 28 Jun 2026 00:00:00 +0000</pubDate>
-      <guid>http://localhost:40729/tags/value-iteration/</guid>
+      <guid>http://localhost:1313/tags/value-iteration/</guid>
       <description></description>
     </item>
     <item>
       <title>Bellman Equation</title>
-      <link>http://localhost:40729/tags/bellman-equation/</link>
+      <link>http://localhost:1313/tags/bellman-equation/</link>
       <pubDate>Mon, 22 Jun 2026 00:00:00 +0000</pubDate>
-      <guid>http://localhost:40729/tags/bellman-equation/</guid>
+      <guid>http://localhost:1313/tags/bellman-equation/</guid>
       <description></description>
     </item>
     <item>
       <title>Monte Carlo</title>
-      <link>http://localhost:40729/tags/monte-carlo/</link>
+      <link>http://localhost:1313/tags/monte-carlo/</link>
       <pubDate>Mon, 22 Jun 2026 00:00:00 +0000</pubDate>
-      <guid>http://localhost:40729/tags/monte-carlo/</guid>
+      <guid>http://localhost:1313/tags/monte-carlo/</guid>
       <description></description>
     </item>
     <item>
       <title>Value Function</title>
-      <link>http://localhost:40729/tags/value-function/</link>
+      <link>http://localhost:1313/tags/value-function/</link>
       <pubDate>Mon, 22 Jun 2026 00:00:00 +0000</pubDate>
-      <guid>http://localhost:40729/tags/value-function/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>Blog</title>
-      <link>http://localhost:40729/tags/blog/</link>
-      <pubDate>Sun, 21 Jun 2026 00:00:00 +0000</pubDate>
-      <guid>http://localhost:40729/tags/blog/</guid>
+      <guid>http://localhost:1313/tags/value-function/</guid>
       <description></description>
     </item>
   </channel>
