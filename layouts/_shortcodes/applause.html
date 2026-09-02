@@ -62,4 +62,40 @@
   </p>
 </div>
 
+<script>
+  (() => {
+    const script = document.currentScript;
+    const wrapper = script.previousElementSibling;
+    const button = wrapper?.querySelector("applause-button");
+
+    if (!button || button.dataset.geoTrackingAttached === "true") {
+      return;
+    }
+
+    button.dataset.geoTrackingAttached = "true";
+
+    button.addEventListener(
+      "clapped",
+      () => {
+        const pageUrl =
+          button.getAttribute("url") || window.location.href;
+
+        fetch("https://blog-like.yunyang-mo.workers.dev/like", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            url: pageUrl
+          }),
+          keepalive: true
+        }).catch((error) => {
+          console.warn("Could not record like location:", error);
+        });
+      },
+      { once: true }
+    );
+  })();
+</script>
+
 {{- end }}
